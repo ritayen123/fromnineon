@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>韭點開始 — 行銷外包一站式解決方案</title>
+  <meta name="description" content="最懂年輕人的語言，最強的品牌聲量。韭點開始提供品牌設計、社群經營、攝影剪輯、內容服務等一站式行銷外包服務。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --teal: #84D2DD;
+      --lime: #AAF952;
+      --green: #01A94D;
+      --pink: #F1B9E1;
+      --black: #0A0A0A;
+      --white: #FFFFFF;
+      --dark-teal: #01A94D;
+      --gray: #F0F0F0;
+      --text-gray: #444;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ========= SCROLLBAR ========= */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--lime); border-radius: 3px; }
+
+    /* ========= NAV ========= */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 48px;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(170,249,82,0.15);
+      transition: padding 0.3s;
+    }
+    nav.scrolled { padding: 10px 48px; }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    .nav-logo-text {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      color: var(--lime);
+      line-height: 1.6;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 2px;
+      background: var(--lime);
+      transition: width 0.2s;
+    }
+    .nav-links a:hover { color: var(--lime); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      background: var(--lime);
+      color: var(--black) !important;
+      padding: 8px 20px;
+      border-radius: 2px;
+      font-weight: 700 !important;
+      font-size: 13px !important;
+      transition: transform 0.15s, box-shadow 0.15s !important;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 16px rgba(170,249,82,0.4) !important;
+      color: var(--black) !important;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      width: 24px; height: 2px;
+      background: var(--white);
+      transition: transform 0.3s, opacity 0.3s;
+    }
+
+    /* ========= HERO ========= */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 120px 24px 80px;
+      background: var(--black);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(170,249,82,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(170,249,82,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(132,210,221,0.15) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    /* Floating pixel blocks */
+    .pixel-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .pixel-block {
+      position: absolute;
+      background: var(--lime);
+      opacity: 0.06;
+      animation: floatBlock linear infinite;
+    }
+
+    @keyframes floatBlock {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.06; }
+      90% { opacity: 0.06; }
+      100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(170,249,82,0.1);
+      border: 1px solid rgba(170,249,82,0.3);
+      border-radius: 2px;
+      padding: 6px 16px;
+      font-size: 12px;
+      color: var(--lime);
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--lime);
+      border-radius: 50%;
+      animation: blink 1.5s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .hero-logo-img {
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 0 40px rgba(132,210,221,0.4));
+      animation: logoFloat 4s ease-in-out infinite;
+    }
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .hero-headline {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(18px, 3.5vw, 38px);
+      line-height: 1.8;
+      text-align: center;
+      color: var(--white);
+      position: relative;
+      z-index: 1;
+      margin-bottom: 16px;
+    }
+    .hero-headline .accent { color: var(--lime); }
+    .hero-headline .accent-teal { color: var(--teal); }
+
+    .hero-sub {
+      font-size: clamp(14px, 2vw, 18px);
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+      max-width: 560px;
+      line-height: 1.8;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 48px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 48px;
+      margin-bottom: 48px;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .hero-stat {
+      text-align: center;
+    }
+    .hero-stat-num {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(20px, 3vw, 32px);
+      color: var(--lime);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .hero-stat-label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.08em;
+    }
+
+    .hero-divider {
+      width: 1px;
+      height: 40px;
+      background: rgba(255,255,255,0.15);
+      align-self: center;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: var(--lime);
+      color: var(--black);
+      border: none;
+      padding: 14px 32px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      border-radius: 2px;
+      letter-spacing: 0.05em;
+      transition: transform 0.15s, box-shadow 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(170,249,82,0.4);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 14px 32px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 2px;
+      letter-spacing: 0.05em;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-secondary:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+      transform: translateY(-3px);
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.3);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      z-index: 1;
+    }
+    .scroll-indicator::after {
+      content: '';
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+      animation: scrollDown 1.5s ease-in-out infinite;
+    }
+    @keyframes scrollDown {
+      0%, 100% { transform: scaleY(0); transform-origin: top; }
+      50% { transform: scaleY(1); transform-origin: top; }
+    }
+
+    /* ========= SECTION COMMON ========= */
+    section { padding: 100px 24px; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--lime);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::before {
+      content: '';
+      width: 24px; height: 2px;
+      background: var(--lime);
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      color: var(--white);
+    }
+    .section-title .accent { color: var(--lime); }
+    .section-title .accent-teal { color: var(--teal); }
+
+    .section-desc {
+      font-size: 16px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.8;
+      max-width: 560px;
+    }
+
+
+    /* ========= SERVICES ========= */
+    #services { background: var(--teal); }
+    #services .section-label { color: var(--black); }
+    #services .section-label::before { background: var(--black); }
+    #services .section-title { color: var(--black); }
+    #services .section-desc { color: rgba(0,0,0,0.6); }
+
+    .services-intro {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 60px;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .service-card {
+      background: rgba(255,255,255,0.5);
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      transition: background 0.3s;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 0;
+      background: var(--lime);
+      transition: height 0.4s;
+    }
+    .service-card:hover { background: rgba(255,255,255,0.8); }
+    .service-card:hover::before { height: 100%; }
+
+    .service-num {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+      color: rgba(0,0,0,0.2);
+      margin-bottom: 24px;
+    }
+    .service-icon {
+      margin-bottom: 20px;
+      display: block;
+      color: var(--black);
+    }
+    .service-icon svg {
+      width: 36px;
+      height: 36px;
+    }
+    .service-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--black);
+      margin-bottom: 12px;
+    }
+    .service-desc {
+      font-size: 14px;
+      color: rgba(0,0,0,0.6);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+    .service-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tag {
+      background: rgba(0,0,0,0.1);
+      border: 1px solid rgba(0,0,0,0.18);
+      color: var(--black);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 2px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    /* ========= REELS / 品牌業配 ========= */
+    #reels { background: var(--black); }
+
+    .reels-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      margin-bottom: 64px;
+    }
+
+    .reels-profile {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 4px;
+      padding: 24px;
+    }
+    .reels-profile-avatar {
+      width: 72px; height: 72px;
+      min-width: 72px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid var(--teal);
+    }
+    .reels-profile-avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      image-rendering: pixelated;
+    }
+    .reels-profile-info { }
+    .reels-profile-handle {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .reels-profile-handle span {
+      color: var(--teal);
+      font-size: 13px;
+      font-weight: 500;
+      margin-left: 8px;
+    }
+    .reels-profile-stats {
+      display: flex;
+      gap: 24px;
+    }
+    .reels-ps { text-align: center; }
+    .reels-ps-num {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px;
+      color: var(--lime);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .reels-ps-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .reels-pitch {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .reels-pitch-point {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .reels-pitch-dot {
+      width: 8px; height: 8px;
+      min-width: 8px;
+      border-radius: 2px;
+      margin-top: 7px;
+    }
+    .reels-pitch-point p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.7;
+    }
+    .reels-pitch-point strong { color: var(--white); }
+
+    .reels-total {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      background: linear-gradient(135deg, rgba(170,249,82,0.1), rgba(1,169,77,0.1));
+      border: 1px solid rgba(170,249,82,0.25);
+      border-radius: 4px;
+      padding: 24px 32px;
+      margin-bottom: 40px;
+    }
+    .reels-total-num {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(24px, 3vw, 40px);
+      color: var(--lime);
+      white-space: nowrap;
+    }
+    .reels-total-label {
+      font-size: 15px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+    }
+    .reels-total-label strong { color: var(--white); font-size: 17px; }
+
+    .reels-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 48px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .reel-card {
+      position: relative;
+      border-radius: 4px;
+      overflow: hidden;
+      aspect-ratio: 9/16;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .reel-card:hover { transform: scale(1.02); }
+
+    .reel-bg {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      background-size: cover;
+      background-position: center;
+    }
+    .reel-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 40%, rgba(0,0,0,0.1) 100%);
+    }
+    .reel-play {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px; height: 40px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .reel-card:hover .reel-play { opacity: 1; }
+
+    .reel-info {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 14px 12px;
+    }
+    .reel-views {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 13px;
+      color: var(--lime);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .reel-views svg { opacity: 0.7; }
+    .reel-title {
+      font-size: 12px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .reel-card.sponsored .reel-badge {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: var(--lime);
+      color: var(--black);
+      font-size: 9px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 2px;
+      letter-spacing: 0.05em;
+    }
+
+    .reels-cta-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .reels-cta-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.5;
+    }
+    .reels-cta-text span { color: var(--lime); }
+
+    @media (max-width: 768px) {
+      .reels-header { grid-template-columns: 1fr; gap: 32px; }
+      .reels-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    }
+
+    /* ========= STATS TICKER ========= */
+    #ticker {
+      background: var(--lime);
+      padding: 0;
+      overflow: hidden;
+      border-top: 2px solid var(--black);
+      border-bottom: 2px solid var(--black);
+    }
+    .ticker-track {
+      display: flex;
+      gap: 0;
+      animation: ticker 20s linear infinite;
+      white-space: nowrap;
+      width: max-content;
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 40px;
+      color: var(--black);
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.05em;
+    }
+    .ticker-item::after {
+      content: '★';
+      color: var(--black);
+      opacity: 0.4;
+    }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ========= CASES ========= */
+    #cases { background: var(--black); }
+
+    .cases-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 60px;
+    }
+
+    .case-card {
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 2px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .case-card:hover {
+      border-color: rgba(132,210,221,0.4);
+      transform: translateY(-4px);
+    }
+    .case-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--teal), var(--lime));
+      transform: scaleX(0);
+      transition: transform 0.3s;
+      transform-origin: left;
+    }
+    .case-card:hover::after { transform: scaleX(1); }
+
+    .case-category {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--teal);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .case-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .case-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .case-metrics {
+      display: flex;
+      gap: 24px;
+    }
+    .case-metric { }
+    .case-metric-num {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px;
+      color: var(--lime);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .case-metric-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* Featured case card */
+    .case-card.featured {
+      grid-column: span 3;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      padding: 48px;
+      background: linear-gradient(135deg, #1f1a17 60%, rgba(132,210,221,0.05));
+      border-color: rgba(132,210,221,0.2);
+    }
+    .case-card.featured .case-content { }
+    .case-card.featured .case-metrics {
+      flex-direction: column;
+      justify-content: center;
+    }
+    .case-card.featured .case-metric-num { font-size: 24px; }
+
+    /* ========= PARTNERS ========= */
+    #partners {
+      background: #0A0A0A;
+      text-align: center;
+      padding-top: 72px;
+      padding-bottom: 72px;
+    }
+    #partners .section-label { color: var(--lime); justify-content: center; }
+    #partners .section-label::before { background: var(--lime); }
+    #partners .section-title { color: var(--white); }
+    #partners .section-desc { color: rgba(255,255,255,0.55); }
+    .partners-header { margin-bottom: 40px; }
+    .logo-marquee-wrap {
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+      mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+    }
+    .logo-marquee-track {
+      display: flex;
+      align-items: center;
+      animation: logoScroll 35s linear infinite;
+      width: max-content;
+    }
+    .logo-marquee-track img {
+      height: 44px;
+      width: auto;
+      object-fit: contain;
+      padding: 0 28px;
+      filter: grayscale(1) brightness(0.55);
+      transition: filter 0.3s;
+      flex-shrink: 0;
+    }
+    .logo-marquee-track img:hover { filter: grayscale(0) brightness(1); }
+    @keyframes logoScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ========= TEAM ========= */
+    #team { background: var(--green); }
+    #team .section-label { color: var(--lime); }
+    #team .section-label::before { background: var(--lime); }
+    #team .section-title { color: var(--white); }
+    #team .section-desc { color: rgba(255,255,255,0.7); }
+    .team-intro {
+      max-width: 640px;
+      margin-bottom: 40px;
+    }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .team-card {
+      background: rgba(0,0,0,0.22);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      overflow: hidden;
+      transition: transform 0.25s, border-color 0.25s;
+      text-align: center;
+    }
+    .team-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(170,249,82,0.3);
+    }
+    .team-portrait {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      display: block;
+      margin: 20px auto 0;
+      background: transparent;
+    }
+    .team-card-info {
+      padding: 12px 16px 18px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .team-role {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--lime);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .team-past {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.65;
+    }
+
+    /* ========= CONTACT / CTA ========= */
+    #contact {
+      background: var(--lime);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #contact::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .contact-inner {
+      position: relative;
+      z-index: 1;
+    }
+    #contact .section-label { color: var(--black); justify-content: center; }
+    #contact .section-label::before { background: var(--black); }
+    #contact .section-title { color: var(--black); }
+    #contact .section-desc {
+      color: rgba(0,0,0,0.6);
+      margin: 0 auto 48px;
+      max-width: 480px;
+    }
+
+    .contact-pixel-text {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(24px, 5vw, 64px);
+      color: var(--black);
+      display: block;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+    .contact-pixel-text .highlight {
+      color: var(--black);
+      background: var(--lime);
+      padding: 0 8px;
+    }
+
+    .contact-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-dark {
+      background: var(--green);
+      color: var(--white);
+      border: none;
+      padding: 16px 36px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      border-radius: 2px;
+      letter-spacing: 0.05em;
+      transition: transform 0.15s, box-shadow 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-dark:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .btn-outline-dark {
+      background: transparent;
+      color: var(--black);
+      border: 2px solid var(--black);
+      padding: 16px 36px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 2px;
+      letter-spacing: 0.05em;
+      transition: background 0.2s, color 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-outline-dark:hover {
+      background: var(--black);
+      color: var(--teal);
+    }
+
+    /* ========= FOOTER ========= */
+    footer {
+      background: #050505;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 48px 24px 32px;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .footer-brand img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    .footer-brand-name {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--lime);
+      line-height: 1.8;
+    }
+    .footer-tagline {
+      font-size: 13px;
+      color: rgba(255,255,255,0.3);
+      max-width: 240px;
+    }
+    .footer-links-group h5 {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 16px;
+    }
+    .footer-links-group ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .footer-links-group a {
+      color: rgba(255,255,255,0.35);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+    .footer-links-group a:hover { color: var(--teal); }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 40px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-copy {
+      font-size: 12px;
+      color: rgba(255,255,255,0.2);
+    }
+    .footer-social {
+      display: flex;
+      gap: 16px;
+    }
+    .footer-social a {
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+    .footer-social a:hover { color: var(--lime); }
+
+    /* ========= ANIMATIONS ========= */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-up-delay-1 { transition-delay: 0.1s; }
+    .fade-up-delay-2 { transition-delay: 0.2s; }
+    .fade-up-delay-3 { transition-delay: 0.3s; }
+    .fade-up-delay-4 { transition-delay: 0.4s; }
+
+    /* ========= MOBILE ========= */
+    @media (max-width: 768px) {
+      nav { padding: 14px 20px; }
+      nav.scrolled { padding: 10px 20px; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 60px; left: 0; right: 0;
+        background: rgba(10,10,10,0.97);
+        padding: 24px;
+        gap: 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        z-index: 99;
+      }
+      .hamburger { display: flex; }
+
+      .services-grid { grid-template-columns: 1fr; }
+      .cases-grid { grid-template-columns: 1fr; }
+      .case-card.featured {
+        grid-column: span 1;
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .team-grid { grid-template-columns: 1fr 1fr; }
+      .hero-divider { display: none; }
+      section { padding: 72px 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .team-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="#" class="nav-logo">
+      <img src="logo.jpg" alt="韭點開始" />
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#services">服務項目</a></li>
+      <li><a href="#cases">成功案例</a></li>
+      <li><a href="#partners">合作夥伴</a></li>
+      <li><a href="#contact" class="nav-cta">立即合作 →</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="pixel-bg" id="pixelBg"></div>
+
+    <div class="hero-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> 品牌置入 · 一站式行銷解決方案</div>
+
+    <img src="logo.jpg" alt="韭點開始 Logo" class="hero-logo-img" />
+
+    <h1 class="hero-headline">
+      最懂年輕人的語言<br/>
+      <span class="accent">最強的品牌聲量</span>
+    </h1>
+    <p class="hero-sub">
+      韭點開始，9 人團隊擅長以低業配感，<br/>
+      將品牌融入有趣的短影音中，極大化曝光跟轉化。
+    </p>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-num">8M+</span>
+        <span class="hero-stat-label">IG 月流量</span>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">3.8K</span>
+        <span class="hero-stat-label">Instagram 粉絲</span>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">1M+</span>
+        <span class="hero-stat-label">單支 Reels 觸及</span>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">500+</span>
+        <span class="hero-stat-label">活動參與人次</span>
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">立即合作 →</a>
+      <a href="#services" class="btn-secondary">了解服務</a>
+    </div>
+
+    <div class="scroll-indicator">SCROLL</div>
+  </section>
+
+  <!-- TICKER -->
+  <div id="ticker">
+    <div class="ticker-track" id="tickerTrack">
+      <span class="ticker-item">IG / Threads 置入</span>
+      <span class="ticker-item">短影音剪輯</span>
+      <span class="ticker-item">長片剪輯</span>
+      <span class="ticker-item">SEO 內容</span>
+      <span class="ticker-item">LOGO 設計</span>
+      <span class="ticker-item">社群經營</span>
+      <span class="ticker-item">IG / Threads 置入</span>
+      <span class="ticker-item">短影音剪輯</span>
+      <span class="ticker-item">長片剪輯</span>
+      <span class="ticker-item">SEO 內容</span>
+      <span class="ticker-item">LOGO 設計</span>
+      <span class="ticker-item">社群經營</span>
+    </div>
+  </div>
+
+
+  <!-- REELS -->
+  <section id="reels">
+    <div class="container">
+      <div class="section-label">品牌業配置入</div>
+      <h2 class="section-title">低業配感，<span class="accent">高傳播力</span></h2>
+
+      <div class="reels-header">
+        <!-- IG Profile card -->
+        <div class="reels-profile fade-up">
+          <div class="reels-profile-avatar">
+            <img src="logo.jpg" alt="from_nine_on" />
+          </div>
+          <div class="reels-profile-info">
+            <div class="reels-profile-handle">韭點開始 <span>@from_nine_on</span></div>
+            <div class="reels-profile-stats">
+              <div class="reels-ps">
+                <span class="reels-ps-num">3,879</span>
+                <span class="reels-ps-label">粉絲</span>
+              </div>
+              <div class="reels-ps">
+                <span class="reels-ps-num">67</span>
+                <span class="reels-ps-label">貼文</span>
+              </div>
+              <div class="reels-ps">
+                <span class="reels-ps-num">8M+</span>
+                <span class="reels-ps-label">月觸及</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pitch points -->
+        <div class="reels-pitch fade-up fade-up-delay-1">
+          <div class="reels-pitch-point">
+            <div class="reels-pitch-dot" style="background: var(--lime);"></div>
+            <p><strong>低業配感</strong>：品牌訊息藏在劇情裡，觀眾願意看完整支影片</p>
+          </div>
+          <div class="reels-pitch-point">
+            <div class="reels-pitch-dot" style="background: var(--teal);"></div>
+            <p><strong>高轉傳率</strong>：有趣才會被分享，分享才能破圈觸及新受眾</p>
+          </div>
+          <div class="reels-pitch-point">
+            <div class="reels-pitch-dot" style="background: var(--pink);"></div>
+            <p><strong>精準受眾</strong>：以年輕族群為核心，貼近日常生活的內容切角</p>
+          </div>
+          <div class="reels-pitch-point">
+            <div class="reels-pitch-dot" style="background: var(--green);"></div>
+            <p><strong>一站到位</strong>：從企劃、拍攝、剪輯到發佈，全程服務</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total stat bar -->
+      <div class="reels-total fade-up">
+        <span class="reels-total-num">1,500萬+</span>
+        <div class="reels-total-label">
+          <strong>累計 Reels 總觀看次數</strong><br/>
+          單支最高突破 811.7 萬次，三支合計突破 1,200 萬觀看
+        </div>
+      </div>
+
+      <!-- Reels Grid -->
+      <div class="reels-grid">
+
+        <!-- #1 最高 811.7萬 -->
+        <a href="https://www.instagram.com/reel/DVIv0ASCbwF/" target="_blank" class="reel-card fade-up">
+          <div class="reel-bg" style="background-image: url('reel-1.png'); "></div>
+          <div class="reel-overlay"></div>
+          <div class="reel-play">▶</div>
+          <div class="reel-info">
+            <div class="reel-views" style="font-size: 16px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+              811.7萬
+            </div>
+            <div class="reel-title">一次只能加一個字</div>
+          </div>
+        </a>
+
+        <!-- #2 252萬 -->
+        <a href="https://www.instagram.com/reel/DUiAdSaEgVz/" target="_blank" class="reel-card fade-up fade-up-delay-1">
+          <div class="reel-bg" style="background-image: url('reel-2.png'); "></div>
+          <div class="reel-overlay"></div>
+          <div class="reel-play">▶</div>
+          <div class="reel-info">
+            <div class="reel-views">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+              252萬
+            </div>
+            <div class="reel-title">壽司郎0元神秘商品？</div>
+          </div>
+        </a>
+
+        <!-- #3 148.6萬 -->
+        <a href="https://www.instagram.com/reel/DVQevPNCQ7X/" target="_blank" class="reel-card fade-up fade-up-delay-2">
+          <div class="reel-bg" style="background-image: url('reel-3.png'); "></div>
+          <div class="reel-overlay"></div>
+          <div class="reel-play">▶</div>
+          <div class="reel-info">
+            <div class="reel-views">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+              148.9萬
+            </div>
+            <div class="reel-title">他到底什麼時候會發現？</div>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- CTA bar -->
+      <div class="reels-cta-bar fade-up">
+        <div class="reels-cta-text">
+          想讓你的品牌出現在<span>韭點下一支 Reels</span>？
+        </div>
+        <a href="https://mail.google.com/mail/?view=cm&to=from.nine.on@gmail.com" target="_blank" class="btn-primary">洽談業配合作 →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="container">
+      <div class="services-intro">
+        <div>
+          <div class="section-label">SERVICES</div>
+          <h2 class="section-title">一站式<br/><span class="accent">行銷解決方案</span></h2>
+        </div>
+        <p class="section-desc">
+          韭點開始 9 人團隊，橫跨各領域豐富經驗，<br/>
+          從品牌識別到社群爆炸，全方位協助你的項目精準行銷。
+        </p>
+      </div>
+
+      <div class="services-grid">
+        <div class="service-card fade-up">
+          <span class="service-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg></span>
+          <h3 class="service-title">品牌設計</h3>
+          <p class="service-desc">
+            Logo、品牌色彩、視覺識別系統、企業 IP 設計，打造令人印象深刻的品牌形象。
+            豐富的網站設計經驗。
+          </p>
+          <div class="service-tags">
+            <span class="tag">Logo 設計</span>
+            <span class="tag">VI 識別系統</span>
+            <span class="tag">UI/UX</span>
+            <span class="tag">動態設計</span>
+            <span class="tag">展覽視覺</span>
+          </div>
+        </div>
+
+        <div class="service-card fade-up fade-up-delay-1">
+          <span class="service-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          <h3 class="service-title">社群經營</h3>
+          <p class="service-desc">
+            目標導向制定經營策略，全面觸及目標受眾。包含 Instagram、X、
+            LINE、Telegram 等平台的內容發佈、留言及私訊管理。
+          </p>
+          <div class="service-tags">
+            <span class="tag">Instagram</span>
+            <span class="tag">X (Twitter)</span>
+            <span class="tag">LINE 社群</span>
+            <span class="tag">Telegram</span>
+            <span class="tag">貼文排程</span>
+          </div>
+        </div>
+
+        <div class="service-card fade-up fade-up-delay-2">
+          <span class="service-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></span>
+          <h3 class="service-title">攝影剪輯</h3>
+          <p class="service-desc">
+            展場活動、線下活動、品牌活動攝影服務。短片 Reels 製作、
+            品牌介紹長片，含腳本建議、字幕字卡、音樂音效、調色特效。
+          </p>
+          <div class="service-tags">
+            <span class="tag">活動攝影</span>
+            <span class="tag">Reels 製作</span>
+            <span class="tag">廣告短片</span>
+            <span class="tag">品牌長片</span>
+          </div>
+        </div>
+
+        <div class="service-card fade-up fade-up-delay-3">
+          <span class="service-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+          <h3 class="service-title">內容服務</h3>
+          <p class="service-desc">
+            SEO 內容製作、新聞稿代筆、人物/企業專訪、專題內容企劃、
+            網站內容顧問。用易讀易懂的口吻介紹各類知識。
+          </p>
+          <div class="service-tags">
+            <span class="tag">SEO 文章</span>
+            <span class="tag">新聞稿</span>
+            <span class="tag">企業專訪</span>
+            <span class="tag">網站顧問</span>
+            <span class="tag">專題企劃</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CASES -->
+  <section id="cases">
+    <div class="container">
+      <div class="section-label">SUCCESS CASES</div>
+      <h2 class="section-title">成功<span class="accent-teal">案例</span></h2>
+      <p class="section-desc">數字說話，結果為王。</p>
+
+      <div class="cases-grid">
+        <!-- Featured -->
+        <div class="case-card featured fade-up">
+          <div class="case-content">
+            <div class="case-category"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg> 社群成長 · Instagram</div>
+            <h3 class="case-title">NONE LAND 官方帳號<br/>6 個月 2K → 22K 粉絲</h3>
+            <p class="case-desc">
+              從零開始打造 @noneland_official，以精準的內容策略和持續的社群互動，
+              在六個月內將粉絲從 2,000 衝破 22,000，每月穩定突破百萬流量，
+              成為台灣最具影響力的Web3社群帳號之一。
+            </p>
+          </div>
+          <div class="case-metrics">
+            <div class="case-metric">
+              <span class="case-metric-num">22K</span>
+              <span class="case-metric-label">IG 粉絲數</span>
+            </div>
+            <div class="case-metric">
+              <span class="case-metric-num">1M+</span>
+              <span class="case-metric-label">月流量突破</span>
+            </div>
+            <div class="case-metric">
+              <span class="case-metric-num">6mo</span>
+              <span class="case-metric-label">達成時間</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case 2 -->
+        <div class="case-card fade-up">
+          <div class="case-category"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> APP 推廣 · 短影音</div>
+          <h3 class="case-title">時時抄經 APP<br/>下載轉換案例</h3>
+          <p class="case-desc">
+            以「刮刮樂前積功德」、「抄經求好運」切入大眾共鳴，
+            低業配感帶來高擴散效果。
+          </p>
+          <div class="case-metrics">
+            <div class="case-metric">
+              <span class="case-metric-num">49.6K</span>
+              <span class="case-metric-label">總觸及人數</span>
+            </div>
+            <div class="case-metric">
+              <span class="case-metric-num">4K</span>
+              <span class="case-metric-label">App 下載次數</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case 3 -->
+        <div class="case-card fade-up fade-up-delay-1">
+          <div class="case-category"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> 線下活動 · 幣圈運動會</div>
+          <h3 class="case-title">幣圈運動會<br/>幣安贊助線下盛事</h3>
+          <p class="case-desc">
+            號召幣圈 KOL、從業人員、粉絲共同參與，
+            由幣安、Flipster 等知名交易所贊助。
+          </p>
+          <div class="case-metrics">
+            <div class="case-metric">
+              <span class="case-metric-num">500+</span>
+              <span class="case-metric-label">活動人次</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case 4 -->
+        <div class="case-card fade-up fade-up-delay-2">
+          <div class="case-category"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> 海外項目 · 台灣推廣</div>
+          <h3 class="case-title">項目專案整合行銷<br/>多平台轉化</h3>
+          <p class="case-desc">
+            KOL 社群聯合宣傳 + SEO 內容行銷 + 短影音，
+            Google 搜尋除官方 X 外介紹文章排第一。
+          </p>
+          <div class="case-metrics">
+            <div class="case-metric">
+              <span class="case-metric-num">209K</span>
+              <span class="case-metric-label">IG 觀看量</span>
+            </div>
+            <div class="case-metric">
+              <span class="case-metric-num">1000+</span>
+              <span class="case-metric-label">平台轉化</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="team">
+    <div class="container">
+      <div class="team-intro">
+        <div class="section-label">THE TEAM</div>
+        <h2 class="section-title"><span class="accent">韭點開始團隊成員</span></h2>
+        <p class="section-desc">
+          前浪鏈核心成員，橫跨媒體、行銷、設計、
+          內容製作等各領域豐富經驗。
+        </p>
+      </div>
+      <div class="team-grid">
+        <div class="team-card fade-up">
+          <img src="portrait-rita.png" alt="Rita" class="team-portrait" />
+          <div class="team-card-info">
+            <div class="team-role">主理人</div>
+            <div class="team-past">NONE LAND 主理人 · Pionex Executive · Assistant to CEO · PChome eBay Account Manager</div>
+          </div>
+        </div>
+        <div class="team-card fade-up fade-up-delay-1">
+          <img src="portrait-andy.png" alt="Andy" class="team-portrait" />
+          <div class="team-card-info">
+            <div class="team-role">BD</div>
+            <div class="team-past">NONE LAND BD · Press Start Capital · Ops &amp; MKT · Arcade Community Lead</div>
+          </div>
+        </div>
+        <div class="team-card fade-up fade-up-delay-2">
+          <img src="portrait-sherry.png" alt="Sherry" class="team-portrait" />
+          <div class="team-card-info">
+            <div class="team-role">社群經營</div>
+            <div class="team-past">NONE LAND Social Media Manager · PChome eBay Marketing Specialist</div>
+          </div>
+        </div>
+        <div class="team-card fade-up fade-up-delay-3">
+          <img src="portrait-gio.png" alt="610" class="team-portrait" />
+          <div class="team-card-info">
+            <div class="team-role">設計師</div>
+            <div class="team-past">NONE LAND Design Manager · 00610y Brand Design Director</div>
+          </div>
+        </div>
+        <div class="team-card fade-up fade-up-delay-1">
+          <img src="portrait-eden.png" alt="Eden" class="team-portrait" />
+          <div class="team-card-info">
+            <div class="team-role">影音製作</div>
+            <div class="team-past">NONE LAND Video Content Manager</div>
+          </div>
+        </div>
+        <div class="team-card fade-up fade-up-delay-2">
+          <img src="portrait-janssen.png" alt="Janssen" class="team-portrait" />
+          <div class="team-card-info">
+            <div class="team-role">影音製作</div>
+            <div class="team-past">NONE LAND Video Content Manager</div>
+          </div>
+        </div>
+        <div class="team-card fade-up fade-up-delay-3">
+          <img src="portrait-crecy.png" alt="Crecy" class="team-portrait" />
+          <div class="team-card-info">
+            <div class="team-role">內容主編</div>
+            <div class="team-past">NONE LAND Chief Content Editor · 17 LIVE Executive Editor · JUKSY News Editor</div>
+          </div>
+        </div>
+        <div class="team-card fade-up fade-up-delay-1">
+          <img src="portrait-tina.png" alt="Tina" class="team-portrait" />
+          <div class="team-card-info">
+            <div class="team-role">內容編輯</div>
+            <div class="team-past">NONE LAND Content Editor · Leviathan Media Group Executive Editor</div>
+          </div>
+        </div>
+        <div class="team-card fade-up fade-up-delay-2">
+          <img src="portrait-fy.png" alt="FY" class="team-portrait" />
+          <div class="team-card-info">
+            <div class="team-role">內容編輯</div>
+            <div class="team-past">NONE LAND Content Editor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARTNERS -->
+  <section id="partners">
+    <div class="container">
+      <div class="partners-header">
+        <div class="section-label" style="justify-content: center;">TRUSTED BY</div>
+        <h2 class="section-title">過往<span class="accent-teal">合作夥伴</span></h2>
+        <p class="section-desc" style="margin: 12px auto 0; text-align: center;">
+          橫跨各產業，累積多個品牌成功合作案例
+        </p>
+      </div>
+      <div class="logo-marquee-wrap">
+        <div class="logo-marquee-track">
+          <img src="partners/logo-01.jpg" alt="partner" /><img src="partners/logo-02.jpg" alt="partner" /><img src="partners/logo-03.jpg" alt="partner" /><img src="partners/logo-04.jpg" alt="partner" /><img src="partners/logo-05.jpg" alt="partner" /><img src="partners/logo-06.jpg" alt="partner" /><img src="partners/logo-07.jpg" alt="partner" /><img src="partners/logo-08.jpg" alt="partner" /><img src="partners/logo-09.jpg" alt="partner" /><img src="partners/logo-10.jpg" alt="partner" /><img src="partners/logo-11.jpg" alt="partner" /><img src="partners/logo-12.jpg" alt="partner" /><img src="partners/logo-13.jpg" alt="partner" /><img src="partners/logo-14.jpg" alt="partner" /><img src="partners/logo-15.jpg" alt="partner" /><img src="partners/logo-16.jpg" alt="partner" /><img src="partners/logo-17.jpeg" alt="partner" /><img src="partners/logo-18.jpeg" alt="partner" /><img src="partners/logo-19.jpeg" alt="partner" /><img src="partners/logo-20.jpeg" alt="partner" /><img src="partners/logo-21.jpeg" alt="partner" /><img src="partners/logo-22.png" alt="partner" /><img src="partners/logo-23.png" alt="partner" /><img src="partners/logo-24.png" alt="partner" /><img src="partners/logo-25.png" alt="partner" /><img src="partners/logo-26.png" alt="partner" /><img src="partners/logo-27.webp" alt="partner" /><img src="partners/logo-28.avif" alt="partner" /><img src="partners/logo-29.avif" alt="partner" /><img src="partners/logo-30.svg" alt="partner" />
+          <img src="partners/logo-01.jpg" alt="partner" /><img src="partners/logo-02.jpg" alt="partner" /><img src="partners/logo-03.jpg" alt="partner" /><img src="partners/logo-04.jpg" alt="partner" /><img src="partners/logo-05.jpg" alt="partner" /><img src="partners/logo-06.jpg" alt="partner" /><img src="partners/logo-07.jpg" alt="partner" /><img src="partners/logo-08.jpg" alt="partner" /><img src="partners/logo-09.jpg" alt="partner" /><img src="partners/logo-10.jpg" alt="partner" /><img src="partners/logo-11.jpg" alt="partner" /><img src="partners/logo-12.jpg" alt="partner" /><img src="partners/logo-13.jpg" alt="partner" /><img src="partners/logo-14.jpg" alt="partner" /><img src="partners/logo-15.jpg" alt="partner" /><img src="partners/logo-16.jpg" alt="partner" /><img src="partners/logo-17.jpeg" alt="partner" /><img src="partners/logo-18.jpeg" alt="partner" /><img src="partners/logo-19.jpeg" alt="partner" /><img src="partners/logo-20.jpeg" alt="partner" /><img src="partners/logo-21.jpeg" alt="partner" /><img src="partners/logo-22.png" alt="partner" /><img src="partners/logo-23.png" alt="partner" /><img src="partners/logo-24.png" alt="partner" /><img src="partners/logo-25.png" alt="partner" /><img src="partners/logo-26.png" alt="partner" /><img src="partners/logo-27.webp" alt="partner" /><img src="partners/logo-28.avif" alt="partner" /><img src="partners/logo-29.avif" alt="partner" /><img src="partners/logo-30.svg" alt="partner" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-inner">
+        <div class="section-label">LET'S WORK TOGETHER</div>
+        <h2 class="section-title" style="font-size: clamp(28px, 4vw, 52px); font-weight: 900; margin-bottom: 16px;">
+          韭點開始，從現在開始！
+        </h2>
+        <p class="section-desc">
+          無論是品牌設計、社群經營、短影音製作還是 SEO 內容，
+          我們提供一站式行銷外包服務，協助你的項目精準觸達目標受眾。
+        </p>
+        <div class="contact-actions">
+          <a href="https://www.instagram.com/from_nine_on" target="_blank" class="btn-dark">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            Instagram @from_nine_on
+          </a>
+          <a href="https://mail.google.com/mail/?view=cm&to=from.nine.on@gmail.com" target="_blank" class="btn-outline-dark">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            寄信給我們
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">
+          <img src="logo.jpg" alt="韭點開始" />
+        </div>
+      </div>
+
+      <div class="footer-links-group">
+        <h5>服務項目</h5>
+        <ul>
+          <li><a href="#services">品牌設計</a></li>
+          <li><a href="#services">社群經營</a></li>
+          <li><a href="#services">攝影剪輯</a></li>
+          <li><a href="#services">內容服務</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-group">
+        <h5>關於</h5>
+        <ul>
+          <li><a href="#cases">成功案例</a></li>
+          <li><a href="#team">團隊介紹</a></li>
+          <li><a href="#partners">合作夥伴</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-group">
+        <h5>聯絡</h5>
+        <ul>
+          <li><a href="https://www.instagram.com/from_nine_on" target="_blank">Instagram</a></li>
+          <li><a href="https://www.threads.net/@from_nine_on" target="_blank">Threads</a></li>
+          <li><a href="https://mail.google.com/mail/?view=cm&to=from.nine.on@gmail.com" target="_blank">Email</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 韭點開始 from_nine_on. All rights reserved.</span>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/from_nine_on" target="_blank">IG</a>
+        <a href="https://www.threads.net/@from_nine_on" target="_blank">Threads</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Nav scroll ──
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ── Mobile menu ──
+    function toggleMenu() {
+      document.getElementById('navLinks').classList.toggle('open');
+    }
+    document.querySelectorAll('#navLinks a').forEach(a => {
+      a.addEventListener('click', () => {
+        document.getElementById('navLinks').classList.remove('open');
+      });
+    });
+
+    // ── Floating pixel blocks ──
+    const pixelBg = document.getElementById('pixelBg');
+    for (let i = 0; i < 20; i++) {
+      const block = document.createElement('div');
+      block.className = 'pixel-block';
+      const size = Math.random() * 24 + 8;
+      block.style.width = size + 'px';
+      block.style.height = size + 'px';
+      block.style.left = Math.random() * 100 + '%';
+      block.style.animationDuration = (Math.random() * 15 + 10) + 's';
+      block.style.animationDelay = (Math.random() * 15) + 's';
+      pixelBg.appendChild(block);
+    }
+
+    // ── Intersection Observer (fade-up) ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // ── Counter animation ──
+    function animateCount(el, target, suffix, duration = 1500) {
+      let start = 0;
+      const step = target / (duration / 16);
+      const timer = setInterval(() => {
+        start += step;
+        if (start >= target) {
+          el.textContent = target + suffix;
+          clearInterval(timer);
+        } else {
+          el.textContent = Math.floor(start) + suffix;
+        }
+      }, 16);
+    }
+
+    // ── Smooth active nav links ──
+    const sections = document.querySelectorAll('section[id]');
+    const navAs = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 100) current = sec.getAttribute('id');
+      });
+      navAs.forEach(a => {
+        a.style.color = a.getAttribute('href') === '#' + current
+          ? 'var(--lime)'
+          : '';
+      });
+    });
+  </script>
+</body>
+</html>
