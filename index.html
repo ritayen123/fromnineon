@@ -1130,13 +1130,27 @@
       }
       .hamburger { display: flex; }
 
+      #hero { padding: 100px 20px 60px; }
+      .hero-sub br { display: none; }
+
       .services-grid { grid-template-columns: 1fr; }
+      .service-card { padding: 28px 24px; }
+
       .cases-grid { grid-template-columns: 1fr; }
+      .case-card { padding: 24px; }
       .case-card.featured {
         grid-column: span 1;
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 20px;
+        padding: 28px 24px;
       }
+
+      .reels-total {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
       .team-grid { grid-template-columns: 1fr 1fr; }
       .hero-divider { display: none; }
       section { padding: 72px 20px; }
@@ -1145,6 +1159,13 @@
     @media (max-width: 480px) {
       .team-grid { grid-template-columns: 1fr; }
       .hero-stats { gap: 24px; }
+      .hero-badge { font-size: 10px; letter-spacing: 0.05em; padding: 6px 10px; }
+      .reels-grid { grid-template-columns: repeat(2, 1fr); max-width: 100%; }
+      .reel-views { font-size: 9px; }
+      .reel-title { font-size: 10px; }
+      .reels-cta-bar { flex-direction: column; align-items: flex-start; }
+      .footer-inner { flex-direction: column; gap: 32px; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
     }
   </style>
 </head>
