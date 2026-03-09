@@ -524,6 +524,7 @@ const EVENT_ZH = {
   reconnect_success:  '重新連線',
   room_code_copy:     '複製房間代碼',
   reaction_sent:      '送出 Emoji 反應',
+  logo_click:         '點擊 Logo 前往主站',
   lobby_wait_duration:'大廳等待時長',
   mode_select:        '選擇模式',
   session_start:      '開啟頁面',
@@ -747,7 +748,7 @@ async function loadGame() {
         dimensionFilter: {
           andGroup: { expressions: [
             hostFilter,
-            { filter: { fieldName: 'eventName', inListFilter: { values: ['join_success', 'game_start', 'game_over', 'play_again', 'knock_vote', 'share_click', 'spectate_start', 'disconnect', 'reconnect_success'] } } },
+            { filter: { fieldName: 'eventName', inListFilter: { values: ['join_success', 'game_start', 'game_over', 'play_again', 'knock_vote', 'share_click', 'spectate_start', 'disconnect', 'reconnect_success', 'logo_click'] } } },
           ]},
         },
         orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }],
