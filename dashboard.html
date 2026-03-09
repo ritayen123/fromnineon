@@ -123,13 +123,12 @@ a { color: var(--accent); text-decoration: none; }
 .date-range {
   display: flex;
   gap: 6px;
-  padding: 20px 28px 0;
 }
 .date-pill {
-  background: var(--surface);
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 6px 16px;
+  padding: 5px 14px;
   font-size: 13px;
   cursor: pointer;
   color: var(--muted);
@@ -294,7 +293,9 @@ a { color: var(--accent); text-decoration: none; }
    RESPONSIVE
 ══════════════════════════════════════════════════ */
 @media (max-width: 600px) {
-  .top-bar, .date-range, .tabs, .tab-content { padding-left: 16px; padding-right: 16px; }
+  .top-bar, .tabs, .tab-content { padding-left: 16px; padding-right: 16px; }
+  .top-bar-right { gap: 8px; }
+  .date-pill { padding: 4px 10px; font-size: 12px; }
   .chart-grid { grid-template-columns: 1fr; }
   .stat-grid  { grid-template-columns: repeat(2, 1fr); }
   .login-box  { padding: 32px 24px; }
@@ -328,17 +329,15 @@ a { color: var(--accent); text-decoration: none; }
   <div class="top-bar">
     <div class="top-bar-title">📊 Analytics Dashboard</div>
     <div class="top-bar-right">
+      <div class="date-range">
+        <div class="date-pill active" data-days="7">7 天</div>
+        <div class="date-pill" data-days="28">28 天</div>
+        <div class="date-pill" data-days="90">90 天</div>
+      </div>
       <img id="user-avatar" class="user-avatar hidden" src="" alt="">
       <span id="user-name" style="font-size:13px;color:var(--muted)"></span>
       <button class="btn-logout" id="btn-logout">登出</button>
     </div>
-  </div>
-
-  <!-- Date range -->
-  <div class="date-range">
-    <div class="date-pill active" data-days="7">7 天</div>
-    <div class="date-pill" data-days="28">28 天</div>
-    <div class="date-pill" data-days="90">90 天</div>
   </div>
 
   <!-- Tabs -->
@@ -506,6 +505,31 @@ const C = {
   border:  '#2a2d3a',
 };
 const PALETTE = [C.teal, C.lime, C.orange, C.pink, C.purple, C.red, C.yellow];
+
+/* ── Event name 中文對照 ─────────────────────────── */
+const EVENT_ZH = {
+  join_attempt:       '嘗試加入遊戲',
+  join_success:       '成功加入遊戲',
+  join_fail:          '加入失敗',
+  private_room_created: '建立私人房間',
+  private_room_joined:  '加入私人房間',
+  game_start:         '遊戲開始',
+  game_over:          '遊戲結束',
+  play_again:         '再玩一局',
+  knock_vote:         '敲頭投票',
+  share_click:        '分享結果',
+  spectate_start:     '選擇觀戰',
+  eliminated:         '被淘汰',
+  disconnect:         '斷線',
+  reconnect_success:  '重新連線',
+  room_code_copy:     '複製房間代碼',
+  reaction_sent:      '送出 Emoji 反應',
+  lobby_wait_duration:'大廳等待時長',
+  mode_select:        '選擇模式',
+  session_start:      '開啟頁面',
+  leave_room:         '離開房間',
+};
+function evZh(name) { return EVENT_ZH[name] || name; }
 
 /* ── Chart defaults ─────────────────────────────── */
 Chart.defaults.color = C.muted;
@@ -749,9 +773,9 @@ async function loadGame() {
       { label: 'Active Users', value: fmtNum(+totRow[0]?.value || 0) },
       { label: 'Sessions',     value: fmtNum(+totRow[1]?.value || 0) },
       { label: 'Page Views',   value: fmtNum(+totRow[2]?.value || 0) },
-      { label: 'game_start',   value: fmtNum(+(eventsResp.rows?.find(r => r.dimensionValues[0].value === 'game_start')?.metricValues[0].value || 0)) },
-      { label: 'game_over',    value: fmtNum(+(eventsResp.rows?.find(r => r.dimensionValues[0].value === 'game_over')?.metricValues[0].value || 0)) },
-      { label: 'share_click',  value: fmtNum(+(eventsResp.rows?.find(r => r.dimensionValues[0].value === 'share_click')?.metricValues[0].value || 0)) },
+      { label: evZh('game_start'),  value: fmtNum(+(eventsResp.rows?.find(r => r.dimensionValues[0].value === 'game_start')?.metricValues[0].value || 0)) },
+      { label: evZh('game_over'),   value: fmtNum(+(eventsResp.rows?.find(r => r.dimensionValues[0].value === 'game_over')?.metricValues[0].value || 0)) },
+      { label: evZh('share_click'), value: fmtNum(+(eventsResp.rows?.find(r => r.dimensionValues[0].value === 'share_click')?.metricValues[0].value || 0)) },
     ];
     document.getElementById('game-stats').innerHTML = statData.map(s =>
       `<div class="stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div></div>`
@@ -773,7 +797,7 @@ async function loadGame() {
     const evNames = (eventsResp.rows || []).map(r => r.dimensionValues[0].value);
     const evCts   = (eventsResp.rows || []).map(r => +r.metricValues[0].value);
     mkChart('chart-game-events', 'bar', {
-      labels: evNames,
+      labels: evNames.map(evZh),
       datasets: [{ data: evCts, backgroundColor: PALETTE.slice(0, evNames.length) }],
     }, { extra: { indexAxis: 'y' }, scales: { x: { grid: { color: C.border } }, y: { grid: { display: false } } } });
 
@@ -785,9 +809,9 @@ async function loadGame() {
     // ── Event table ──
     const maxEv = Math.max(...evCts, 1);
     document.getElementById('table-game-events').innerHTML =
-      `<thead><tr><th>Event</th><th>次數</th><th>比例</th></tr></thead><tbody>` +
+      `<thead><tr><th>事件</th><th>次數</th><th>比例</th></tr></thead><tbody>` +
       evNames.map((n, i) => `<tr>
-        <td>${n}</td>
+        <td>${evZh(n)}<span style="font-size:11px;color:var(--muted);margin-left:6px">${n}</span></td>
         <td>${fmtNum(evCts[i])}</td>
         <td><div class="bar-cell"><div class="mini-bar" style="width:${Math.round(evCts[i]/maxEv*120)}px"></div>${fmtPct(evCts[i]/maxEv)}</div></td>
       </tr>`).join('') +
