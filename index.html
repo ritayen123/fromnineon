@@ -13,6 +13,8 @@
   <!-- Favicon -->
   <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
   <link rel="apple-touch-icon" href="/favicon.jpg" />
+  <!-- Preload critical above-the-fold image -->
+  <link rel="preload" as="image" href="/logo.jpg" />
 
   <!-- Open Graph -->
   <meta property="og:title" content="韭點開始 | 短影音創作 · 品牌行銷" />
@@ -1438,8 +1440,8 @@
 
   <!-- NAV -->
   <nav id="navbar" aria-label="主要導覽">
-    <a href="#" class="nav-logo">
-      <img src="logo.jpg" alt="韭點開始" />
+    <a href="#" class="nav-logo" aria-label="韭點開始，回到頁面頂部">
+      <img src="logo.jpg" alt="韭點開始" width="48" height="48" />
     </a>
     <ul class="nav-links" id="navLinks">
       <li><a href="#services">服務項目</a></li>
@@ -1462,7 +1464,7 @@
 
     <div class="hero-badge"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> 品牌置入 · 一站式行銷解決方案</div>
 
-    <img src="logo.jpg" alt="韭點開始 Logo" class="hero-logo-img" />
+    <img src="logo.jpg" alt="韭點開始 Logo" class="hero-logo-img" width="160" height="160" />
 
     <h1 class="hero-headline">
       最懂年輕人的語言<br/>
@@ -1585,43 +1587,43 @@
       <!-- Reels Grid -->
       <div class="reels-grid">
 
-        <!-- #1 最高 811.7萬 -->
+        <!-- #1 最高 886萬 -->
         <a href="https://www.instagram.com/reel/DVIv0ASCbwF/" target="_blank" rel="noopener noreferrer" class="reel-card fade-up">
-          <div class="reel-bg" style="background-image: url('reel-1.png'); "></div>
+          <div class="reel-bg" data-bg="url('reel-1.webp')"></div>
           <div class="reel-overlay"></div>
           <div class="reel-play">▶</div>
           <div class="reel-info">
             <div class="reel-views" style="font-size: 16px;">
               <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-              811.7萬
+              886萬
             </div>
             <div class="reel-title">一次只能加一個字</div>
           </div>
         </a>
 
-        <!-- #2 252萬 -->
+        <!-- #2 262萬 -->
         <a href="https://www.instagram.com/reel/DUiAdSaEgVz/" target="_blank" rel="noopener noreferrer" class="reel-card fade-up fade-up-delay-1">
-          <div class="reel-bg" style="background-image: url('reel-2.png'); "></div>
+          <div class="reel-bg" data-bg="url('reel-2.webp')"></div>
           <div class="reel-overlay"></div>
           <div class="reel-play">▶</div>
           <div class="reel-info">
             <div class="reel-views">
               <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-              252萬
+              262萬
             </div>
             <div class="reel-title">壽司郎0元神秘商品？</div>
           </div>
         </a>
 
-        <!-- #3 148.6萬 -->
+        <!-- #3 411萬 -->
         <a href="https://www.instagram.com/reel/DVQevPNCQ7X/" target="_blank" rel="noopener noreferrer" class="reel-card fade-up fade-up-delay-2">
-          <div class="reel-bg" style="background-image: url('reel-3.png'); "></div>
+          <div class="reel-bg" data-bg="url('reel-3.webp')"></div>
           <div class="reel-overlay"></div>
           <div class="reel-play">▶</div>
           <div class="reel-info">
             <div class="reel-views">
               <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-              148.9萬
+              411萬
             </div>
             <div class="reel-title">他到底什麼時候會發現？</div>
           </div>
@@ -1820,63 +1822,63 @@
       </div>
       <div class="team-grid">
         <div class="team-card fade-up">
-          <img src="portrait-rita.png" alt="Rita" class="team-portrait" loading="lazy" />
+          <img src="portrait-rita.webp" alt="Rita" class="team-portrait" loading="lazy" width="120" height="120" />
           <div class="team-card-info">
             <div class="team-role">主理人</div>
             <div class="team-past">NONE LAND 主理人 · Pionex Executive · Assistant to CEO · PChome eBay Account Manager</div>
           </div>
         </div>
         <div class="team-card fade-up fade-up-delay-1">
-          <img src="portrait-andy.png" alt="Andy" class="team-portrait" loading="lazy" />
+          <img src="portrait-andy.webp" alt="Andy" class="team-portrait" loading="lazy" width="120" height="120" />
           <div class="team-card-info">
             <div class="team-role">BD</div>
             <div class="team-past">NONE LAND BD · Press Start Capital · Ops &amp; MKT · Arcade Community Lead</div>
           </div>
         </div>
         <div class="team-card fade-up fade-up-delay-2">
-          <img src="portrait-sherry.png" alt="Sherry" class="team-portrait" loading="lazy" />
+          <img src="portrait-sherry.webp" alt="Sherry" class="team-portrait" loading="lazy" width="120" height="120" />
           <div class="team-card-info">
             <div class="team-role">社群經營</div>
             <div class="team-past">NONE LAND Social Media Manager · PChome eBay Marketing Specialist</div>
           </div>
         </div>
         <div class="team-card fade-up fade-up-delay-3">
-          <img src="portrait-gio.png" alt="610" class="team-portrait" loading="lazy" />
+          <img src="portrait-gio.webp" alt="610" class="team-portrait" loading="lazy" width="120" height="120" />
           <div class="team-card-info">
             <div class="team-role">設計師</div>
             <div class="team-past">NONE LAND Design Manager · 00610y Brand Design Director</div>
           </div>
         </div>
         <a href="https://zackzhuo-folio.lovable.app/reels" target="_blank" rel="noopener noreferrer" class="team-card fade-up fade-up-delay-1" style="text-decoration:none;">
-          <img src="portrait-eden.png" alt="Eden" class="team-portrait" loading="lazy" />
+          <img src="portrait-eden.webp" alt="Eden" class="team-portrait" loading="lazy" width="120" height="120" />
           <div class="team-card-info">
             <div class="team-role">影音製作</div>
             <div class="team-past">NONE LAND Video Content Manager</div>
           </div>
         </a>
         <div class="team-card fade-up fade-up-delay-2">
-          <img src="portrait-janssen.png" alt="Janssen" class="team-portrait" loading="lazy" />
+          <img src="portrait-janssen.webp" alt="Janssen" class="team-portrait" loading="lazy" width="120" height="120" />
           <div class="team-card-info">
             <div class="team-role">影音製作</div>
             <div class="team-past">NONE LAND Video Content Manager</div>
           </div>
         </div>
         <div class="team-card fade-up fade-up-delay-3">
-          <img src="portrait-crecy.png" alt="Crecy" class="team-portrait" loading="lazy" />
+          <img src="portrait-crecy.webp" alt="Crecy" class="team-portrait" loading="lazy" width="120" height="120" />
           <div class="team-card-info">
             <div class="team-role">內容主編</div>
             <div class="team-past">NONE LAND Chief Content Editor · 17 LIVE Executive Editor · JUKSY News Editor</div>
           </div>
         </div>
         <div class="team-card fade-up fade-up-delay-1">
-          <img src="portrait-tina.png" alt="Tina" class="team-portrait" loading="lazy" />
+          <img src="portrait-tina.webp" alt="Tina" class="team-portrait" loading="lazy" width="120" height="120" />
           <div class="team-card-info">
             <div class="team-role">內容編輯</div>
             <div class="team-past">NONE LAND Content Editor · Leviathan Media Group Executive Editor</div>
           </div>
         </div>
         <div class="team-card fade-up fade-up-delay-2">
-          <img src="portrait-fy.png" alt="FY" class="team-portrait" loading="lazy" />
+          <img src="portrait-fy.webp" alt="FY" class="team-portrait" loading="lazy" width="120" height="120" />
           <div class="team-card-info">
             <div class="team-role">內容編輯</div>
             <div class="team-past">NONE LAND Content Editor</div>
@@ -2062,6 +2064,17 @@
     }, { threshold: 0.15 });
 
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // ── Lazy load CSS background images ──
+    const bgObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting && e.target.dataset.bg) {
+          e.target.style.backgroundImage = e.target.dataset.bg;
+          bgObserver.unobserve(e.target);
+        }
+      });
+    }, { rootMargin: '200px' });
+    document.querySelectorAll('[data-bg]').forEach(el => bgObserver.observe(el));
 
     // ── Counter animation ──
     function animateCount(el, target, suffix, duration = 1500) {
