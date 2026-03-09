@@ -515,6 +515,24 @@ const CONFIG = {
 /* ── State ─────────────────────────────────────── */
 let accessToken = null;
 let tokenClient = null;
+
+/* ── Token persistence ─────────────────────────── */
+const LS_TOKEN = 'dash_gtoken';
+const LS_EXP   = 'dash_gtoken_exp';
+function saveToken(resp) {
+  const exp = Date.now() + ((resp.expires_in || 3600) * 1000) - 60000; // 1 min buffer
+  localStorage.setItem(LS_TOKEN, resp.access_token);
+  localStorage.setItem(LS_EXP, exp.toString());
+}
+function loadToken() {
+  const t = localStorage.getItem(LS_TOKEN);
+  const e = parseInt(localStorage.getItem(LS_EXP) || '0');
+  return (t && Date.now() < e) ? t : null;
+}
+function clearToken() {
+  localStorage.removeItem(LS_TOKEN);
+  localStorage.removeItem(LS_EXP);
+}
 let activeDays  = 7;
 let activeTab   = 'game';
 const charts    = {};   // chart instances keyed by canvas id
@@ -584,17 +602,25 @@ window.addEventListener('load', () => {
       ].join(' '),
       callback: onTokenReceived,
     });
+
+    // Auto-restore session if token still valid
+    const saved = loadToken();
+    if (saved) {
+      accessToken = saved;
+      onTokenReceived({ access_token: saved });
+    }
   }, 100);
 });
 
 document.getElementById('btn-login').addEventListener('click', () => {
   if (!tokenClient) { alert('Google API 尚未載入，請稍候再試'); return; }
-  tokenClient.requestAccessToken({ prompt: 'consent' });
+  tokenClient.requestAccessToken({ prompt: 'select_account' });
 });
 
 document.getElementById('btn-logout').addEventListener('click', () => {
   if (accessToken) google.accounts.oauth2.revoke(accessToken, () => {});
   accessToken = null;
+  clearToken();
   Object.values(charts).forEach(c => c.destroy());
   document.getElementById('dashboard').classList.add('hidden');
   document.getElementById('login-screen').classList.remove('hidden');
@@ -603,6 +629,7 @@ document.getElementById('btn-logout').addEventListener('click', () => {
 async function onTokenReceived(resp) {
   if (resp.error) { console.error(resp); return; }
   accessToken = resp.access_token;
+  if (resp.expires_in) saveToken(resp); // persist only when fresh token (not restored)
 
   // fetch user info for avatar
   try {
