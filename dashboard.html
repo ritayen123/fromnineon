@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics Dashboard | fromnineon</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+/* ══════════════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #0f1117;
+  --surface:  #1a1d27;
+  --border:   #2a2d3a;
+  --text:     #e8eaf0;
+  --muted:    #7c8098;
+  --accent:   #84D2DD;
+  --accent2:  #AAF952;
+  --danger:   #ff6b6b;
+  --warn:     #ffd93d;
+  --radius:   12px;
+  --font:     'Inter', 'Noto Sans TC', system-ui, sans-serif;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+a { color: var(--accent); text-decoration: none; }
+.hidden { display: none !important; }
+
+/* ══════════════════════════════════════════════════
+   LOGIN SCREEN
+══════════════════════════════════════════════════ */
+#login-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 24px;
+  padding: 24px;
+}
+.login-logo {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+.login-logo span { color: var(--accent); }
+.login-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px 48px;
+  text-align: center;
+  max-width: 380px;
+  width: 100%;
+}
+.login-box h2 { font-size: 20px; margin-bottom: 8px; }
+.login-box p  { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+.btn-google {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  color: #1f1f1f;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  transition: opacity .15s;
+}
+.btn-google:hover { opacity: .9; }
+.btn-google svg { flex-shrink: 0; }
+.login-note { font-size: 12px; color: var(--muted); margin-top: 16px; }
+
+/* ══════════════════════════════════════════════════
+   DASHBOARD LAYOUT
+══════════════════════════════════════════════════ */
+#dashboard { padding: 0 0 60px; }
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.top-bar-title { font-size: 16px; font-weight: 700; }
+.top-bar-right { display: flex; align-items: center; gap: 12px; }
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  object-fit: cover;
+}
+.btn-logout {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-logout:hover { border-color: var(--text); color: var(--text); }
+
+/* date range pill */
+.date-range {
+  display: flex;
+  gap: 6px;
+  padding: 20px 28px 0;
+}
+.date-pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all .15s;
+}
+.date-pill.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+
+/* tabs */
+.tabs {
+  display: flex;
+  gap: 0;
+  padding: 16px 28px 0;
+  border-bottom: 1px solid var(--border);
+  margin: 0 0 24px;
+}
+.tab {
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all .15s;
+}
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* tab content */
+.tab-content { padding: 0 28px; }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* section */
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  margin: 28px 0 14px;
+}
+
+/* stat cards */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.stat-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.stat-value { font-size: 26px; font-weight: 900; letter-spacing: -1px; }
+.stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.stat-up   { color: var(--accent2); }
+.stat-down { color: var(--danger); }
+
+/* chart cards */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.chart-card.wide { grid-column: 1 / -1; }
+.chart-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; }
+.chart-wrap { position: relative; height: 200px; }
+.chart-wrap.tall { height: 260px; }
+
+/* table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.data-table th {
+  text-align: left;
+  padding: 8px 12px;
+  color: var(--muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,.03); }
+.bar-cell { display: flex; align-items: center; gap: 8px; }
+.mini-bar { height: 6px; border-radius: 3px; background: var(--accent); opacity: .7; min-width: 2px; }
+
+/* loading */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 48px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+/* error */
+.error-box {
+  background: rgba(255,107,107,.1);
+  border: 1px solid rgba(255,107,107,.3);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  font-size: 13px;
+  color: var(--danger);
+  margin-bottom: 16px;
+}
+
+/* ── Site banner ─────────────────────────────── */
+.site-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin: 16px 0 4px;
+}
+.site-banner-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.site-banner-name { font-size: 15px; font-weight: 700; }
+.site-banner-url  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.site-banner-game { background: rgba(132,210,221,.07); border-color: rgba(132,210,221,.25); }
+.site-banner-game .site-banner-dot { background: #84D2DD; box-shadow: 0 0 6px #84D2DD; }
+.site-banner-game .site-banner-name { color: #84D2DD; }
+
+.site-banner-site { background: rgba(170,249,82,.07); border-color: rgba(170,249,82,.25); }
+.site-banner-site .site-banner-dot { background: #AAF952; box-shadow: 0 0 6px #AAF952; }
+.site-banner-site .site-banner-name { color: #AAF952; }
+
+.site-banner-gsc { background: rgba(255,179,71,.07); border-color: rgba(255,179,71,.25); }
+.site-banner-gsc .site-banner-dot { background: #FFB347; box-shadow: 0 0 6px #FFB347; }
+.site-banner-gsc .site-banner-name { color: #FFB347; }
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .top-bar, .date-range, .tabs, .tab-content { padding-left: 16px; padding-right: 16px; }
+  .chart-grid { grid-template-columns: 1fr; }
+  .stat-grid  { grid-template-columns: repeat(2, 1fr); }
+  .login-box  { padding: 32px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-logo">from<span>nineon</span></div>
+  <div class="login-box">
+    <h2>Analytics Dashboard</h2>
+    <p>使用你的 Google 帳號登入，<br>查看 GA4 與 GSC 數據</p>
+    <button class="btn-google" id="btn-login">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+      Login with Google
+    </button>
+    <p class="login-note">只有擁有 GA / GSC 存取權的帳號才能看到資料</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     DASHBOARD
+════════════════════════════════════════════════ -->
+<div id="dashboard" class="hidden">
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="top-bar-title">📊 Analytics Dashboard</div>
+    <div class="top-bar-right">
+      <img id="user-avatar" class="user-avatar hidden" src="" alt="">
+      <span id="user-name" style="font-size:13px;color:var(--muted)"></span>
+      <button class="btn-logout" id="btn-logout">登出</button>
+    </div>
+  </div>
+
+  <!-- Date range -->
+  <div class="date-range">
+    <div class="date-pill active" data-days="7">7 天</div>
+    <div class="date-pill" data-days="28">28 天</div>
+    <div class="date-pill" data-days="90">90 天</div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" data-tab="game">🎮 接字遊戲</div>
+    <div class="tab" data-tab="site">🌐 主站</div>
+    <div class="tab" data-tab="gsc">🔍 搜尋</div>
+  </div>
+
+  <!-- ─── Tab: GAME ─────────────────────────────── -->
+  <div class="tab-content">
+    <div id="tab-game" class="tab-pane active">
+      <div id="game-loading" class="loading"><div class="spinner"></div> 載入中…</div>
+      <div id="game-error" class="error-box hidden"></div>
+      <div id="game-content" class="hidden">
+        <div class="site-banner site-banner-game">
+          <div class="site-banner-dot"></div>
+          <div>
+            <div class="site-banner-name">🎮 接字遊戲</div>
+            <div class="site-banner-url">game.fromnineon.com · Google Analytics</div>
+          </div>
+        </div>
+        <p class="section-title">總覽</p>
+        <div class="stat-grid" id="game-stats"></div>
+
+        <p class="section-title">每日活躍用戶</p>
+        <div class="chart-grid">
+          <div class="chart-card wide">
+            <div class="chart-title">Active Users</div>
+            <div class="chart-wrap tall"><canvas id="chart-game-users"></canvas></div>
+          </div>
+        </div>
+
+        <p class="section-title">遊戲事件</p>
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-title">事件次數</div>
+            <div class="chart-wrap tall"><canvas id="chart-game-events"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">裝置分布</div>
+            <div class="chart-wrap"><canvas id="chart-game-device"></canvas></div>
+          </div>
+        </div>
+
+        <p class="section-title">事件明細</p>
+        <div class="chart-card">
+          <table class="data-table" id="table-game-events"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Tab: SITE ───────────────────────────── -->
+    <div id="tab-site" class="tab-pane">
+      <div id="site-loading" class="loading"><div class="spinner"></div> 載入中…</div>
+      <div id="site-error" class="error-box hidden"></div>
+      <div id="site-content" class="hidden">
+        <div class="site-banner site-banner-site">
+          <div class="site-banner-dot"></div>
+          <div>
+            <div class="site-banner-name">🌐 fromnineon 主站</div>
+            <div class="site-banner-url">fromnineon.com · Google Analytics</div>
+          </div>
+        </div>
+        <p class="section-title">總覽</p>
+        <div class="stat-grid" id="site-stats"></div>
+
+        <p class="section-title">每日 Sessions</p>
+        <div class="chart-grid">
+          <div class="chart-card wide">
+            <div class="chart-title">Sessions &amp; Active Users</div>
+            <div class="chart-wrap tall"><canvas id="chart-site-sessions"></canvas></div>
+          </div>
+        </div>
+
+        <p class="section-title">流量來源</p>
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-title">管道分組</div>
+            <div class="chart-wrap"><canvas id="chart-site-channel"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">裝置分布</div>
+            <div class="chart-wrap"><canvas id="chart-site-device"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Tab: GSC ────────────────────────────── -->
+    <div id="tab-gsc" class="tab-pane">
+      <div id="gsc-loading" class="loading"><div class="spinner"></div> 載入中…</div>
+      <div id="gsc-error" class="error-box hidden"></div>
+      <div id="gsc-content" class="hidden">
+        <div class="site-banner site-banner-gsc">
+          <div class="site-banner-dot"></div>
+          <div>
+            <div class="site-banner-name">🔍 搜尋表現</div>
+            <div class="site-banner-url">fromnineon.com · Google Search Console</div>
+          </div>
+        </div>
+        <p class="section-title">總覽</p>
+        <div class="stat-grid" id="gsc-stats"></div>
+
+        <p class="section-title">點擊 &amp; 曝光趨勢</p>
+        <div class="chart-grid">
+          <div class="chart-card wide">
+            <div class="chart-title">Clicks &amp; Impressions</div>
+            <div class="chart-wrap tall"><canvas id="chart-gsc-trend"></canvas></div>
+          </div>
+        </div>
+
+        <p class="section-title">熱門關鍵字（前 20）</p>
+        <div class="chart-card">
+          <table class="data-table" id="table-gsc-queries"></table>
+        </div>
+
+        <p class="section-title" style="margin-top:24px">熱門頁面（前 20）</p>
+        <div class="chart-card">
+          <table class="data-table" id="table-gsc-pages"></table>
+        </div>
+      </div>
+    </div>
+  </div><!-- /tab-content -->
+
+</div><!-- /dashboard -->
+
+<script>
+/* ══════════════════════════════════════════════════
+   ⚙️  CONFIG — 請填入你的資料
+   ═══════════════════════════════════════════════ */
+const CONFIG = {
+  // Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client ID
+  CLIENT_ID: '945452284916-96lf7svo6kov8bhvdf7n6v33gg3j7nch.apps.googleusercontent.com',
+
+  // GA4 後台 → 管理 → 資源 → 資源詳情 → 資源 ID（純數字）
+  GA_PROPERTY:      'properties/526719498',   // 兩個網站共用同一個 GA4 資源
+  GA_GAME_HOST:     'game.fromnineon.com',     // 用 hostname 篩選遊戲流量
+  GA_MAIN_HOST:     'fromnineon.com',          // 用 hostname 篩選主站流量
+
+  // GSC 後台裡的 site URL（要完全一致，含結尾斜線）
+  GSC_SITE_GAME: 'https://game.fromnineon.com/',
+  GSC_SITE_MAIN: 'https://fromnineon.com/',
+};
+/* ══════════════════════════════════════════════════ */
+
+/* ── State ─────────────────────────────────────── */
+let accessToken = null;
+let tokenClient = null;
+let activeDays  = 7;
+let activeTab   = 'game';
+const charts    = {};   // chart instances keyed by canvas id
+
+/* ── Colours ────────────────────────────────────── */
+const C = {
+  teal:    '#84D2DD',
+  lime:    '#AAF952',
+  orange:  '#FFB347',
+  pink:    '#FF84C0',
+  purple:  '#B39DDB',
+  red:     '#ff6b6b',
+  yellow:  '#ffd93d',
+  muted:   '#7c8098',
+  bg:      '#1a1d27',
+  border:  '#2a2d3a',
+};
+const PALETTE = [C.teal, C.lime, C.orange, C.pink, C.purple, C.red, C.yellow];
+
+/* ── Chart defaults ─────────────────────────────── */
+Chart.defaults.color = C.muted;
+Chart.defaults.font.family = 'Inter, Noto Sans TC, system-ui';
+Chart.defaults.plugins.legend.labels.boxWidth = 12;
+Chart.defaults.plugins.legend.labels.padding  = 14;
+
+/* ══════════════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════════════ */
+window.addEventListener('load', () => {
+  // wait for GIS to load
+  const waitGIS = setInterval(() => {
+    if (typeof google === 'undefined' || !google.accounts) return;
+    clearInterval(waitGIS);
+
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CONFIG.CLIENT_ID,
+      scope: [
+        'https://www.googleapis.com/auth/analytics.readonly',
+        'https://www.googleapis.com/auth/webmasters.readonly',
+        'profile email',
+      ].join(' '),
+      callback: onTokenReceived,
+    });
+  }, 100);
+});
+
+document.getElementById('btn-login').addEventListener('click', () => {
+  if (!tokenClient) { alert('Google API 尚未載入，請稍候再試'); return; }
+  tokenClient.requestAccessToken({ prompt: 'consent' });
+});
+
+document.getElementById('btn-logout').addEventListener('click', () => {
+  if (accessToken) google.accounts.oauth2.revoke(accessToken, () => {});
+  accessToken = null;
+  Object.values(charts).forEach(c => c.destroy());
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('login-screen').classList.remove('hidden');
+});
+
+async function onTokenReceived(resp) {
+  if (resp.error) { console.error(resp); return; }
+  accessToken = resp.access_token;
+
+  // fetch user info for avatar
+  try {
+    const me = await apiFetch('https://www.googleapis.com/oauth2/v3/userinfo');
+    const avatar = document.getElementById('user-avatar');
+    const nameEl = document.getElementById('user-name');
+    if (me.picture) { avatar.src = me.picture; avatar.classList.remove('hidden'); }
+    if (me.name)    nameEl.textContent = me.name;
+  } catch(_) {}
+
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  loadCurrentTab();
+}
+
+/* ══════════════════════════════════════════════════
+   API HELPERS
+══════════════════════════════════════════════════ */
+async function apiFetch(url, opts = {}) {
+  const res = await fetch(url, {
+    ...opts,
+    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json', ...(opts.headers || {}) },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+async function ga4Report(property, body) {
+  return apiFetch(`https://analyticsdata.googleapis.com/v1beta/${property}:runReport`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+async function gscQuery(site, body) {
+  const encoded = encodeURIComponent(site);
+  return apiFetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encoded}/searchAnalytics/query`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+function dateRange(days) {
+  return [{ startDate: `${days}daysAgo`, endDate: 'today' }];
+}
+
+function fmtNum(n) {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+  if (n >= 1_000)     return (n / 1_000).toFixed(1) + 'K';
+  return String(Math.round(n));
+}
+function fmtPct(n) { return (n * 100).toFixed(1) + '%'; }
+function fmtPos(n) { return n.toFixed(1); }
+
+/* ══════════════════════════════════════════════════
+   TABS & DATE PILLS
+══════════════════════════════════════════════════ */
+document.querySelectorAll('.date-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.date-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    activeDays = parseInt(pill.dataset.days, 10);
+    resetTabData();
+    loadCurrentTab();
+  });
+});
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    const id = tab.dataset.tab;
+    activeTab = id;
+    document.getElementById(`tab-${id}`).classList.add('active');
+    loadCurrentTab();
+  });
+});
+
+function resetTabData() {
+  ['game', 'site', 'gsc'].forEach(t => {
+    show(`${t}-loading`);
+    hide(`${t}-content`);
+    hide(`${t}-error`);
+  });
+}
+
+function loadCurrentTab() {
+  if (!accessToken) return;
+  if (activeTab === 'game') loadGame();
+  if (activeTab === 'site') loadSite();
+  if (activeTab === 'gsc')  loadGsc();
+}
+
+const tabLoaded = { game: false, site: false, gsc: false };
+
+/* ══════════════════════════════════════════════════
+   CHART HELPERS
+══════════════════════════════════════════════════ */
+function mkChart(id, type, data, opts = {}) {
+  if (charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id)?.getContext('2d');
+  if (!ctx) return;
+  charts[id] = new Chart(ctx, {
+    type,
+    data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: opts.legend ?? false } },
+      scales: opts.noScale ? undefined : {
+        x: { grid: { color: C.border }, ticks: { maxTicksLimit: 8 } },
+        y: { grid: { color: C.border }, beginAtZero: true },
+        ...opts.scales,
+      },
+      ...opts.extra,
+    },
+  });
+}
+
+function mkDonut(id, labels, values) {
+  if (charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id)?.getContext('2d');
+  if (!ctx) return;
+  charts[id] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: PALETTE, borderColor: C.bg, borderWidth: 2 }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: true, position: 'right' } },
+    },
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   GAME TAB
+══════════════════════════════════════════════════ */
+async function loadGame() {
+  if (tabLoaded.game) return;
+  tabLoaded.game = true;
+  try {
+    const days = activeDays;
+    const dr   = dateRange(days);
+    const prop = CONFIG.GA_PROPERTY;
+    const hostFilter = {
+      filter: { fieldName: 'hostName', stringFilter: { value: CONFIG.GA_GAME_HOST, matchType: 'EXACT' } },
+    };
+
+    // parallel fetch
+    const [usersResp, eventsResp, deviceResp, totalsResp] = await Promise.all([
+      // daily users
+      ga4Report(prop, {
+        dateRanges: dr,
+        dimensions: [{ name: 'date' }],
+        metrics: [{ name: 'activeUsers' }, { name: 'sessions' }],
+        dimensionFilter: hostFilter,
+        orderBys: [{ dimension: { dimensionName: 'date' } }],
+      }),
+      // event counts
+      ga4Report(prop, {
+        dateRanges: dr,
+        dimensions: [{ name: 'eventName' }],
+        metrics: [{ name: 'eventCount' }],
+        dimensionFilter: {
+          andGroup: { expressions: [
+            hostFilter,
+            { filter: { fieldName: 'eventName', inListFilter: { values: ['join_success', 'game_start', 'game_over', 'play_again', 'knock_vote', 'share_click', 'spectate_start', 'disconnect', 'reconnect_success'] } } },
+          ]},
+        },
+        orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }],
+      }),
+      // device
+      ga4Report(prop, {
+        dateRanges: dr,
+        dimensions: [{ name: 'deviceCategory' }],
+        metrics: [{ name: 'activeUsers' }],
+        dimensionFilter: hostFilter,
+      }),
+      // totals
+      ga4Report(prop, {
+        dateRanges: dr,
+        metrics: [{ name: 'activeUsers' }, { name: 'sessions' }, { name: 'screenPageViews' }],
+        dimensionFilter: hostFilter,
+      }),
+    ]);
+
+    // ── Stats ──
+    const totRow = totalsResp.rows?.[0]?.metricValues || [];
+    const statData = [
+      { label: 'Active Users', value: fmtNum(+totRow[0]?.value || 0) },
+      { label: 'Sessions',     value: fmtNum(+totRow[1]?.value || 0) },
+      { label: 'Page Views',   value: fmtNum(+totRow[2]?.value || 0) },
+      { label: 'game_start',   value: fmtNum(+(eventsResp.rows?.find(r => r.dimensionValues[0].value === 'game_start')?.metricValues[0].value || 0)) },
+      { label: 'game_over',    value: fmtNum(+(eventsResp.rows?.find(r => r.dimensionValues[0].value === 'game_over')?.metricValues[0].value || 0)) },
+      { label: 'share_click',  value: fmtNum(+(eventsResp.rows?.find(r => r.dimensionValues[0].value === 'share_click')?.metricValues[0].value || 0)) },
+    ];
+    document.getElementById('game-stats').innerHTML = statData.map(s =>
+      `<div class="stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div></div>`
+    ).join('');
+
+    // ── Daily users line chart ──
+    const dateLabels = (usersResp.rows || []).map(r => r.dimensionValues[0].value.replace(/(\d{4})(\d{2})(\d{2})/, '$2/$3'));
+    const userVals   = (usersResp.rows || []).map(r => +r.metricValues[0].value);
+    const sesVals    = (usersResp.rows || []).map(r => +r.metricValues[1].value);
+    mkChart('chart-game-users', 'line', {
+      labels: dateLabels,
+      datasets: [
+        { label: 'Active Users', data: userVals, borderColor: C.teal, backgroundColor: 'rgba(132,210,221,.15)', fill: true, tension: .35, pointRadius: 2 },
+        { label: 'Sessions',     data: sesVals,  borderColor: C.lime, backgroundColor: 'rgba(170,249,82,.1)',   fill: true, tension: .35, pointRadius: 2 },
+      ],
+    }, { legend: true });
+
+    // ── Event bar chart ──
+    const evNames = (eventsResp.rows || []).map(r => r.dimensionValues[0].value);
+    const evCts   = (eventsResp.rows || []).map(r => +r.metricValues[0].value);
+    mkChart('chart-game-events', 'bar', {
+      labels: evNames,
+      datasets: [{ data: evCts, backgroundColor: PALETTE.slice(0, evNames.length) }],
+    }, { extra: { indexAxis: 'y' }, scales: { x: { grid: { color: C.border } }, y: { grid: { display: false } } } });
+
+    // ── Device donut ──
+    const devLabels = (deviceResp.rows || []).map(r => r.dimensionValues[0].value);
+    const devVals   = (deviceResp.rows || []).map(r => +r.metricValues[0].value);
+    mkDonut('chart-game-device', devLabels, devVals);
+
+    // ── Event table ──
+    const maxEv = Math.max(...evCts, 1);
+    document.getElementById('table-game-events').innerHTML =
+      `<thead><tr><th>Event</th><th>次數</th><th>比例</th></tr></thead><tbody>` +
+      evNames.map((n, i) => `<tr>
+        <td>${n}</td>
+        <td>${fmtNum(evCts[i])}</td>
+        <td><div class="bar-cell"><div class="mini-bar" style="width:${Math.round(evCts[i]/maxEv*120)}px"></div>${fmtPct(evCts[i]/maxEv)}</div></td>
+      </tr>`).join('') +
+      `</tbody>`;
+
+    show('game-content'); hide('game-loading');
+  } catch(e) {
+    tabLoaded.game = false;
+    showError('game', e.message);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   SITE TAB
+══════════════════════════════════════════════════ */
+async function loadSite() {
+  if (tabLoaded.site) return;
+  tabLoaded.site = true;
+  try {
+    const dr   = dateRange(activeDays);
+    const prop = CONFIG.GA_PROPERTY;
+    const hostFilter = {
+      filter: { fieldName: 'hostName', stringFilter: { value: CONFIG.GA_MAIN_HOST, matchType: 'EXACT' } },
+    };
+
+    const [sessResp, channelResp, deviceResp, totalsResp] = await Promise.all([
+      ga4Report(prop, {
+        dateRanges: dr,
+        dimensions: [{ name: 'date' }],
+        metrics: [{ name: 'sessions' }, { name: 'activeUsers' }],
+        dimensionFilter: hostFilter,
+        orderBys: [{ dimension: { dimensionName: 'date' } }],
+      }),
+      ga4Report(prop, {
+        dateRanges: dr,
+        dimensions: [{ name: 'sessionDefaultChannelGroup' }],
+        metrics: [{ name: 'sessions' }],
+        dimensionFilter: hostFilter,
+        orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+        limit: 8,
+      }),
+      ga4Report(prop, {
+        dateRanges: dr,
+        dimensions: [{ name: 'deviceCategory' }],
+        metrics: [{ name: 'activeUsers' }],
+        dimensionFilter: hostFilter,
+      }),
+      ga4Report(prop, {
+        dateRanges: dr,
+        metrics: [{ name: 'activeUsers' }, { name: 'sessions' }, { name: 'screenPageViews' }, { name: 'bounceRate' }],
+        dimensionFilter: hostFilter,
+      }),
+    ]);
+
+    const totRow = totalsResp.rows?.[0]?.metricValues || [];
+    const statData = [
+      { label: 'Active Users', value: fmtNum(+totRow[0]?.value || 0) },
+      { label: 'Sessions',     value: fmtNum(+totRow[1]?.value || 0) },
+      { label: 'Page Views',   value: fmtNum(+totRow[2]?.value || 0) },
+      { label: 'Bounce Rate',  value: fmtPct(+totRow[3]?.value || 0) },
+    ];
+    document.getElementById('site-stats').innerHTML = statData.map(s =>
+      `<div class="stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div></div>`
+    ).join('');
+
+    const dateLabels = (sessResp.rows || []).map(r => r.dimensionValues[0].value.replace(/(\d{4})(\d{2})(\d{2})/, '$2/$3'));
+    const sesVals    = (sessResp.rows || []).map(r => +r.metricValues[0].value);
+    const userVals   = (sessResp.rows || []).map(r => +r.metricValues[1].value);
+    mkChart('chart-site-sessions', 'line', {
+      labels: dateLabels,
+      datasets: [
+        { label: 'Sessions',     data: sesVals,  borderColor: C.teal, backgroundColor: 'rgba(132,210,221,.15)', fill: true, tension: .35, pointRadius: 2 },
+        { label: 'Active Users', data: userVals, borderColor: C.lime, backgroundColor: 'rgba(170,249,82,.1)',   fill: true, tension: .35, pointRadius: 2 },
+      ],
+    }, { legend: true });
+
+    const chLabels = (channelResp.rows || []).map(r => r.dimensionValues[0].value);
+    const chVals   = (channelResp.rows || []).map(r => +r.metricValues[0].value);
+    mkDonut('chart-site-channel', chLabels, chVals);
+
+    const devLabels = (deviceResp.rows || []).map(r => r.dimensionValues[0].value);
+    const devVals   = (deviceResp.rows || []).map(r => +r.metricValues[0].value);
+    mkDonut('chart-site-device', devLabels, devVals);
+
+    show('site-content'); hide('site-loading');
+  } catch(e) {
+    tabLoaded.site = false;
+    showError('site', e.message);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   GSC TAB
+══════════════════════════════════════════════════ */
+async function loadGsc() {
+  if (tabLoaded.gsc) return;
+  tabLoaded.gsc = true;
+  try {
+    const days = activeDays;
+    const end  = new Date();
+    const start = new Date(end - days * 86400000);
+    const fmt  = d => d.toISOString().slice(0, 10);
+    const dateBody = { startDate: fmt(start), endDate: fmt(end), rowLimit: 90 };
+
+    const site = CONFIG.GSC_SITE_MAIN;
+
+    const [trendResp, queriesResp, pagesResp] = await Promise.all([
+      gscQuery(site, { ...dateBody, dimensions: ['date'], rowLimit: days + 5 }),
+      gscQuery(site, { ...dateBody, dimensions: ['query'], rowLimit: 20, orderBys: [{ fieldName: 'clicks', sortOrder: 'DESCENDING' }] }),
+      gscQuery(site, { ...dateBody, dimensions: ['page'],  rowLimit: 20, orderBys: [{ fieldName: 'clicks', sortOrder: 'DESCENDING' }] }),
+    ]);
+
+    const rows = trendResp.rows || [];
+    const clicks      = rows.map(r => r.clicks);
+    const impressions = rows.map(r => r.impressions);
+    const dateLabels  = rows.map(r => r.keys[0].slice(5));   // MM-DD
+
+    const totClicks = clicks.reduce((s, v) => s + v, 0);
+    const totImps   = impressions.reduce((s, v) => s + v, 0);
+    const avgCtr    = totImps ? totClicks / totImps : 0;
+    const avgPos    = rows.length ? rows.reduce((s, r) => s + r.position, 0) / rows.length : 0;
+    const statData  = [
+      { label: 'Clicks',       value: fmtNum(totClicks) },
+      { label: 'Impressions',  value: fmtNum(totImps) },
+      { label: 'Avg CTR',      value: fmtPct(avgCtr) },
+      { label: 'Avg Position', value: fmtPos(avgPos) },
+    ];
+    document.getElementById('gsc-stats').innerHTML = statData.map(s =>
+      `<div class="stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div></div>`
+    ).join('');
+
+    mkChart('chart-gsc-trend', 'line', {
+      labels: dateLabels,
+      datasets: [
+        { label: 'Clicks',      data: clicks,      borderColor: C.teal, backgroundColor: 'rgba(132,210,221,.15)', fill: true, tension: .35, pointRadius: 2, yAxisID: 'y' },
+        { label: 'Impressions', data: impressions, borderColor: C.lime, backgroundColor: 'rgba(170,249,82,.08)',  fill: true, tension: .35, pointRadius: 2, yAxisID: 'y2' },
+      ],
+    }, {
+      legend: true,
+      scales: {
+        x:  { grid: { color: C.border }, ticks: { maxTicksLimit: 8 } },
+        y:  { grid: { color: C.border }, beginAtZero: true, position: 'left',  title: { display: true, text: 'Clicks' } },
+        y2: { grid: { display: false }, beginAtZero: true, position: 'right', title: { display: true, text: 'Impressions' } },
+      },
+    });
+
+    // Query table
+    const qRows = queriesResp.rows || [];
+    const maxClk = Math.max(...qRows.map(r => r.clicks), 1);
+    document.getElementById('table-gsc-queries').innerHTML =
+      `<thead><tr><th>關鍵字</th><th>點擊</th><th>曝光</th><th>CTR</th><th>排名</th></tr></thead><tbody>` +
+      qRows.map(r => `<tr>
+        <td>${r.keys[0]}</td>
+        <td><div class="bar-cell"><div class="mini-bar" style="width:${Math.round(r.clicks/maxClk*80)}px"></div>${fmtNum(r.clicks)}</div></td>
+        <td>${fmtNum(r.impressions)}</td>
+        <td>${fmtPct(r.ctr)}</td>
+        <td>${fmtPos(r.position)}</td>
+      </tr>`).join('') + `</tbody>`;
+
+    // Page table
+    const pRows = pagesResp.rows || [];
+    const maxPClk = Math.max(...pRows.map(r => r.clicks), 1);
+    document.getElementById('table-gsc-pages').innerHTML =
+      `<thead><tr><th>頁面</th><th>點擊</th><th>曝光</th><th>CTR</th><th>排名</th></tr></thead><tbody>` +
+      pRows.map(r => {
+        const url = r.keys[0];
+        const short = url.replace(/^https?:\/\/[^/]+/, '') || '/';
+        return `<tr>
+          <td><a href="${url}" target="_blank" title="${url}">${short}</a></td>
+          <td><div class="bar-cell"><div class="mini-bar" style="width:${Math.round(r.clicks/maxPClk*80)}px"></div>${fmtNum(r.clicks)}</div></td>
+          <td>${fmtNum(r.impressions)}</td>
+          <td>${fmtPct(r.ctr)}</td>
+          <td>${fmtPos(r.position)}</td>
+        </tr>`;
+      }).join('') + `</tbody>`;
+
+    show('gsc-content'); hide('gsc-loading');
+  } catch(e) {
+    tabLoaded.gsc = false;
+    showError('gsc', e.message);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════════ */
+function show(id) { document.getElementById(id)?.classList.remove('hidden'); }
+function hide(id) { document.getElementById(id)?.classList.add('hidden'); }
+function showError(tab, msg) {
+  const el = document.getElementById(`${tab}-error`);
+  if (el) { el.textContent = `⚠️ 載入失敗：${msg}`; el.classList.remove('hidden'); }
+  hide(`${tab}-loading`);
+}
+</script>
+</body>
+</html>
