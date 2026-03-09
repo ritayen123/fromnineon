@@ -834,7 +834,10 @@ async function loadSite() {
     const dr   = dateRange(activeDays);
     const prop = CONFIG.GA_PROPERTY;
     const hostFilter = {
-      filter: { fieldName: 'hostName', stringFilter: { value: CONFIG.GA_MAIN_HOST, matchType: 'EXACT' } },
+      orGroup: { expressions: [
+        { filter: { fieldName: 'hostName', stringFilter: { value: CONFIG.GA_MAIN_HOST,        matchType: 'EXACT' } } },
+        { filter: { fieldName: 'hostName', stringFilter: { value: 'www.' + CONFIG.GA_MAIN_HOST, matchType: 'EXACT' } } },
+      ]},
     };
 
     const [sessResp, channelResp, deviceResp, totalsResp] = await Promise.all([
