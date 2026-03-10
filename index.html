@@ -1945,7 +1945,7 @@
 
           <div class="form-group">
             <label for="service">服務需求</label>
-            <select id="service" name="service">
+            <select id="service" name="service" required>
               <option value="">選擇服務類型</option>
               <option value="品牌業配 Reels">品牌業配 Reels</option>
               <option value="社群經營">社群經營</option>
@@ -2066,20 +2066,6 @@
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
     // ── Counter animation ──
-    function animateCount(el, target, suffix, duration = 1500) {
-      let start = 0;
-      const step = target / (duration / 16);
-      const timer = setInterval(() => {
-        start += step;
-        if (start >= target) {
-          el.textContent = target + suffix;
-          clearInterval(timer);
-        } else {
-          el.textContent = Math.floor(start) + suffix;
-        }
-      }, 16);
-    }
-
     // ── Smooth active nav links ──
     const sections = document.querySelectorAll('section[id]');
     const navAs = document.querySelectorAll('.nav-links a');
