@@ -729,6 +729,7 @@ document.querySelectorAll('.tab').forEach(tab => {
 
 function resetTabData() {
   ['game', 'site', 'gsc'].forEach(t => {
+    tabLoaded[t] = false;
     show(`${t}-loading`);
     hide(`${t}-content`);
     hide(`${t}-error`);
