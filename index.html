@@ -1438,6 +1438,16 @@
       .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
       .form-row { grid-template-columns: 1fr; }
     }
+  /* SEO 用途隱藏文字（視覺不顯示，搜尋引擎可讀）*/
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
   </style>
 </head>
 <body>
@@ -1471,7 +1481,7 @@
     <img src="logo.webp" alt="韭點開始 Logo" class="hero-logo-img" width="160" height="160" fetchpriority="high" />
 
     <h1 class="hero-headline">
-      韭點開始
+      <span class="sr-only">台灣頂尖短影音 · 社群行銷團隊</span>韭點開始
     </h1>
     <p class="hero-sub">
       韭點開始，台灣9人社群行銷團隊，擅長以低業配感，<br/>
