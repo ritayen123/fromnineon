@@ -289,6 +289,10 @@ a { color: var(--accent); text-decoration: none; }
 .site-banner-gsc .site-banner-dot { background: #FFB347; box-shadow: 0 0 6px #FFB347; }
 .site-banner-gsc .site-banner-name { color: #FFB347; }
 
+.site-banner-quiz { background: rgba(241,185,225,.07); border-color: rgba(241,185,225,.25); }
+.site-banner-quiz .site-banner-dot { background: #F1B9E1; box-shadow: 0 0 6px #F1B9E1; }
+.site-banner-quiz .site-banner-name { color: #F1B9E1; }
+
 /* ── Suggestions ─────────────────────────────── */
 .suggestions { margin-top: 32px; margin-bottom: 8px; }
 .suggestion-list { display: flex; flex-direction: column; gap: 10px; }
@@ -363,6 +367,7 @@ a { color: var(--accent); text-decoration: none; }
   <div class="tabs">
     <div class="tab active" data-tab="game">🎮 加字挑戰</div>
     <div class="tab" data-tab="site">🌐 主站</div>
+    <div class="tab" data-tab="quiz">🎤 粉絲測驗</div>
     <div class="tab" data-tab="gsc">🔍 搜尋</div>
   </div>
 
@@ -467,6 +472,51 @@ a { color: var(--accent); text-decoration: none; }
       </div>
     </div>
 
+    <!-- ─── Tab: QUIZ ───────────────────────────── -->
+    <div id="tab-quiz" class="tab-pane">
+      <div id="quiz-loading" class="loading"><div class="spinner"></div> 載入中…</div>
+      <div id="quiz-error" class="error-box hidden"></div>
+      <div id="quiz-content" class="hidden">
+        <div class="site-banner site-banner-quiz">
+          <div class="site-banner-dot"></div>
+          <div>
+            <div class="site-banner-name">🎤 周杰倫粉絲大調查</div>
+            <div class="site-banner-url">jay-quiz-tan.vercel.app · Google Analytics</div>
+          </div>
+        </div>
+        <p class="section-title">總覽</p>
+        <div class="stat-grid" id="quiz-stats"></div>
+
+        <p class="section-title">每日趨勢</p>
+        <div class="chart-grid">
+          <div class="chart-card wide">
+            <div class="chart-title">Active Users &amp; Sessions</div>
+            <div class="chart-wrap tall"><canvas id="chart-quiz-users"></canvas></div>
+          </div>
+        </div>
+
+        <p class="section-title">裝置分布</p>
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-title">裝置分布</div>
+            <div class="chart-wrap"><canvas id="chart-quiz-device"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">測驗事件</div>
+            <div class="chart-wrap tall"><canvas id="chart-quiz-events"></canvas></div>
+          </div>
+        </div>
+
+        <p class="section-title">事件明細</p>
+        <div class="chart-card">
+          <table class="data-table" id="table-quiz-events"></table>
+        </div>
+
+        <p class="section-title" style="margin-top:32px">建議改善事項</p>
+        <div class="suggestions"><div class="suggestion-list" id="quiz-suggestions"></div></div>
+      </div>
+    </div>
+
     <!-- ─── Tab: GSC ────────────────────────────── -->
     <div id="tab-gsc" class="tab-pane">
       <div id="gsc-loading" class="loading"><div class="spinner"></div> 載入中…</div>
@@ -520,6 +570,7 @@ const CONFIG = {
   GA_PROPERTY:      'properties/526719498',   // 兩個網站共用同一個 GA4 資源
   GA_GAME_HOST:     'game.fromnineon.com',     // 用 hostname 篩選遊戲流量
   GA_MAIN_HOST:     'fromnineon.com',          // 用 hostname 篩選主站流量
+  GA_QUIZ_HOST:     'jay-quiz-tan.vercel.app', // 用 hostname 篩選測驗流量
 
   // GSC 後台裡的 site URL（要完全一致，含結尾斜線）
   GSC_SITE_GAME: 'https://game.fromnineon.com/',
@@ -590,6 +641,11 @@ const EVENT_ZH = {
   mode_select:        '選擇模式',
   session_start:      '開啟頁面',
   leave_room:         '離開房間',
+  quiz_start:         '開始測驗',
+  quiz_complete:      '完成測驗',
+  share_click:        '分享結果',
+  retry_click:        '再測一次',
+  ig_follow_click:    '追蹤 IG',
 };
 function evZh(name) { return EVENT_ZH[name] || name; }
 
@@ -728,7 +784,7 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 function resetTabData() {
-  ['game', 'site', 'gsc'].forEach(t => {
+  ['game', 'site', 'quiz', 'gsc'].forEach(t => {
     tabLoaded[t] = false;
     show(`${t}-loading`);
     hide(`${t}-content`);
@@ -740,10 +796,11 @@ function loadCurrentTab() {
   if (!accessToken) return;
   if (activeTab === 'game') loadGame();
   if (activeTab === 'site') loadSite();
+  if (activeTab === 'quiz') loadQuiz();
   if (activeTab === 'gsc')  loadGsc();
 }
 
-const tabLoaded = { game: false, site: false, gsc: false };
+const tabLoaded = { game: false, site: false, quiz: false, gsc: false };
 
 /* ══════════════════════════════════════════════════
    CHART HELPERS
@@ -1003,6 +1060,174 @@ async function loadSite() {
     tabLoaded.site = false;
     showError('site', e.message);
   }
+}
+
+/* ══════════════════════════════════════════════════
+   QUIZ TAB
+══════════════════════════════════════════════════ */
+async function loadQuiz() {
+  if (tabLoaded.quiz) return;
+  tabLoaded.quiz = true;
+  try {
+    const days = activeDays;
+    const dr   = dateRange(days);
+    const prop = CONFIG.GA_PROPERTY;
+    const hostFilter = {
+      filter: { fieldName: 'hostName', stringFilter: { value: CONFIG.GA_QUIZ_HOST, matchType: 'EXACT' } },
+    };
+
+    const quizEvents = ['quiz_start', 'quiz_complete', 'share_click', 'retry_click', 'ig_follow_click'];
+
+    const [usersResp, eventsResp, deviceResp, totalsResp] = await Promise.all([
+      // daily users
+      ga4Report(prop, {
+        dateRanges: dr,
+        dimensions: [{ name: 'date' }],
+        metrics: [{ name: 'activeUsers' }, { name: 'sessions' }],
+        dimensionFilter: hostFilter,
+        orderBys: [{ dimension: { dimensionName: 'date' } }],
+      }),
+      // custom events
+      ga4Report(prop, {
+        dateRanges: dr,
+        dimensions: [{ name: 'eventName' }],
+        metrics: [{ name: 'eventCount' }],
+        dimensionFilter: {
+          andGroup: { expressions: [
+            hostFilter,
+            { filter: { fieldName: 'eventName', inListFilter: { values: quizEvents } } },
+          ]},
+        },
+        orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }],
+      }),
+      // device
+      ga4Report(prop, {
+        dateRanges: dr,
+        dimensions: [{ name: 'deviceCategory' }],
+        metrics: [{ name: 'activeUsers' }],
+        dimensionFilter: hostFilter,
+      }),
+      // totals
+      ga4Report(prop, {
+        dateRanges: dr,
+        metrics: [{ name: 'activeUsers' }, { name: 'sessions' }, { name: 'screenPageViews' }],
+        dimensionFilter: hostFilter,
+      }),
+    ]);
+
+    // ── Stats ──
+    const totRow = totalsResp.rows?.[0]?.metricValues || [];
+    const evVal = name => +(eventsResp.rows?.find(r => r.dimensionValues[0].value === name)?.metricValues[0].value || 0);
+    const statData = [
+      { label: 'Active Users', value: fmtNum(+totRow[0]?.value || 0) },
+      { label: 'Sessions',     value: fmtNum(+totRow[1]?.value || 0) },
+      { label: 'Page Views',   value: fmtNum(+totRow[2]?.value || 0) },
+      { label: '完成測驗次數',  value: fmtNum(evVal('quiz_complete')) },
+    ];
+    document.getElementById('quiz-stats').innerHTML = statData.map(s =>
+      `<div class="stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div></div>`
+    ).join('');
+
+    // ── Daily users line chart ──
+    const dateLabels = (usersResp.rows || []).map(r => r.dimensionValues[0].value.replace(/(\d{4})(\d{2})(\d{2})/, '$2/$3'));
+    const userVals   = (usersResp.rows || []).map(r => +r.metricValues[0].value);
+    const sesVals    = (usersResp.rows || []).map(r => +r.metricValues[1].value);
+    mkChart('chart-quiz-users', 'line', {
+      labels: dateLabels,
+      datasets: [
+        { label: 'Active Users', data: userVals, borderColor: C.pink, backgroundColor: 'rgba(241,185,225,.15)', fill: true, tension: .35, pointRadius: 2 },
+        { label: 'Sessions',     data: sesVals,  borderColor: C.purple, backgroundColor: 'rgba(179,157,219,.1)', fill: true, tension: .35, pointRadius: 2 },
+      ],
+    }, { legend: true });
+
+    // ── Device donut ──
+    const devLabels = (deviceResp.rows || []).map(r => r.dimensionValues[0].value);
+    const devVals   = (deviceResp.rows || []).map(r => +r.metricValues[0].value);
+    mkDonut('chart-quiz-device', devLabels, devVals);
+
+    // ── Event bar chart ──
+    const evNames = (eventsResp.rows || []).map(r => r.dimensionValues[0].value);
+    const evCts   = (eventsResp.rows || []).map(r => +r.metricValues[0].value);
+    mkChart('chart-quiz-events', 'bar', {
+      labels: evNames.map(evZh),
+      datasets: [{ data: evCts, backgroundColor: [C.pink, C.purple, C.teal, C.lime, C.orange].slice(0, evNames.length) }],
+    }, { extra: { indexAxis: 'y' }, scales: { x: { grid: { color: C.border } }, y: { grid: { display: false } } } });
+
+    // ── Event table ──
+    const maxEv = Math.max(...evCts, 1);
+    document.getElementById('table-quiz-events').innerHTML =
+      `<thead><tr><th>事件</th><th>次數</th><th>比例</th></tr></thead><tbody>` +
+      evNames.map((n, i) => `<tr>
+        <td>${evZh(n)}<span style="font-size:11px;color:var(--muted);margin-left:6px">${n}</span></td>
+        <td>${fmtNum(evCts[i])}</td>
+        <td><div class="bar-cell"><div class="mini-bar" style="width:${Math.round(evCts[i]/maxEv*120)}px"></div>${fmtPct(evCts[i]/maxEv)}</div></td>
+      </tr>`).join('') +
+      `</tbody>`;
+
+    quizSuggestions(eventsResp, deviceResp, totalsResp);
+    show('quiz-content'); hide('quiz-loading');
+  } catch(e) {
+    tabLoaded.quiz = false;
+    showError('quiz', e.message);
+  }
+}
+
+function quizSuggestions(eventsResp, deviceResp, totalsResp) {
+  const ev = name => +(eventsResp.rows?.find(r => r.dimensionValues[0].value === name)?.metricValues[0].value || 0);
+  const quizStart    = ev('quiz_start');
+  const quizComplete = ev('quiz_complete');
+  const shareClick   = ev('share_click');
+  const retryClick   = ev('retry_click');
+  const igFollow     = ev('ig_follow_click');
+  const sessions     = +(totalsResp.rows?.[0]?.metricValues[1]?.value || 0);
+  const devRows      = deviceResp.rows || [];
+  const totalDev     = devRows.reduce((s, r) => s + (+r.metricValues[0].value), 0) || 1;
+  const mobileVal    = +(devRows.find(r => r.dimensionValues[0].value === 'mobile')?.metricValues[0].value || 0);
+  const mobilePct    = mobileVal / totalDev;
+
+  const completeRate = quizStart ? quizComplete / quizStart : 0;
+  const shareRate    = quizComplete ? shareClick / quizComplete : 0;
+  const retryRate    = quizComplete ? retryClick / quizComplete : 0;
+  const igRate       = quizComplete ? igFollow / quizComplete : 0;
+
+  const items = [];
+
+  if (quizStart === 0) {
+    items.push({ type: 'info', icon: '📊', head: '資料尚不足', desc: '選取的時間區間內尚無測驗數據，可拉長時間範圍或確認 GA Tag 是否正常運作。' });
+  } else {
+    // 完成率
+    if (completeRate < 0.5)
+      items.push({ type: 'warn', icon: '🏁', head: `測驗完成率偏低（${fmtPct(completeRate)}）`, desc: `${fmtNum(quizStart)} 人開始，但不到一半完成。考慮減少題數、加入進度鼓勵，或檢查某些題目是否太難導致中途放棄。` });
+    else if (completeRate < 0.8)
+      items.push({ type: 'info', icon: '🏁', head: `測驗完成率尚可（${fmtPct(completeRate)}）`, desc: '50–80% 的開始者會完成測驗。可嘗試在中途加入鼓勵文案，減少跳出。' });
+    else
+      items.push({ type: 'ok', icon: '🏁', head: `測驗完成率良好（${fmtPct(completeRate)}）`, desc: '超過 80% 的人完成全部題目，代表內容吸引力高。' });
+
+    // 分享率
+    if (shareRate < 0.1)
+      items.push({ type: 'warn', icon: '📤', head: `分享率偏低（${fmtPct(shareRate)}）`, desc: '完成測驗後不到 10% 的人分享。可優化分享圖片的吸引力，或讓分享按鈕更顯眼。' });
+    else if (shareRate < 0.25)
+      items.push({ type: 'info', icon: '📤', head: `分享率尚有空間（${fmtPct(shareRate)}）`, desc: '10–25% 的完成者有分享。可嘗試加入「分享挑戰朋友」的 CTA 文案提升動機。' });
+    else
+      items.push({ type: 'ok', icon: '📤', head: `分享率良好（${fmtPct(shareRate)}）`, desc: '超過 25% 的完成者分享結果，病毒擴散效果不錯！' });
+
+    // 再測率
+    if (retryRate > 0.3)
+      items.push({ type: 'ok', icon: '🔄', head: `再測率高（${fmtPct(retryRate)}）`, desc: '超過 30% 的人選擇重新測驗，代表題目有隨機性且用戶想拿更好的分數。' });
+    else if (retryRate > 0.1)
+      items.push({ type: 'info', icon: '🔄', head: `再測率普通（${fmtPct(retryRate)}）`, desc: '10–30% 的人重測。可在結果頁強調「還有隱藏題」來吸引再玩。' });
+
+    // IG 追蹤率
+    if (igRate < 0.05)
+      items.push({ type: 'warn', icon: '📷', head: `IG 追蹤點擊率偏低（${fmtPct(igRate)}）`, desc: '不到 5% 的完成者點擊追蹤 IG。可調整按鈕位置或加入「追蹤解鎖更多測驗」的誘因。' });
+    else
+      items.push({ type: 'ok', icon: '📷', head: `IG 追蹤點擊率不錯（${fmtPct(igRate)}）`, desc: '測驗成功引導用戶回到 IG，持續利用測驗做為導流工具。' });
+  }
+
+  if (mobilePct > 0.7)
+    items.push({ type: 'info', icon: '📱', head: `${fmtPct(mobilePct)} 用戶使用手機`, desc: '手機用戶為主力，確保 IG Story 分享流程在手機上流暢運作。' });
+
+  renderSuggestions('quiz-suggestions', items);
 }
 
 /* ══════════════════════════════════════════════════
