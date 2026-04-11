@@ -313,6 +313,74 @@ a { color: var(--accent); text-decoration: none; }
 .suggestion-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
 
 /* ══════════════════════════════════════════════════
+   PROJECT CARDS
+══════════════════════════════════════════════════ */
+.project-group-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 8px 0 6px;
+  padding-left: 14px;
+  border-left: 4px solid var(--accent);
+}
+.project-group-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 18px 18px;
+}
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.project-card-title { font-size: 16px; font-weight: 800; }
+.project-card-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.project-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.project-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(132,210,221,.12);
+  color: var(--accent);
+}
+.project-tag.green  { background: rgba(170,249,82,.12); color: var(--accent2); }
+.project-tag.pink   { background: rgba(241,185,225,.12); color: #F1B9E1; }
+.project-tag.orange { background: rgba(255,183,77,.12); color: #FFB74D; }
+.project-tag.purple { background: rgba(179,157,219,.12); color: #B39DDB; }
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: auto;
+}
+.project-link-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+.project-link-label {
+  color: var(--muted);
+  min-width: 55px;
+  flex-shrink: 0;
+}
+.project-link-row a { color: var(--accent); word-break: break-all; }
+.project-link-row a:hover { text-decoration: underline; }
+.project-link-row span.plain { color: var(--text); font-size: 13px; }
+
+/* ══════════════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════════════ */
 @media (max-width: 600px) {
@@ -369,6 +437,7 @@ a { color: var(--accent); text-decoration: none; }
     <div class="tab" data-tab="site">🌐 主站</div>
     <div class="tab" data-tab="quiz">🎤 粉絲測驗</div>
     <div class="tab" data-tab="gsc">🔍 搜尋</div>
+    <div class="tab" data-tab="projects">📁 專案整理</div>
   </div>
 
   <!-- ─── Tab: GAME ─────────────────────────────── -->
@@ -554,6 +623,76 @@ a { color: var(--accent); text-decoration: none; }
         <div class="suggestions"><div class="suggestion-list" id="gsc-suggestions"></div></div>
       </div>
     </div>
+
+    <!-- ─── Tab: PROJECTS ─────────────────────────── -->
+    <div id="tab-projects" class="tab-pane">
+      <div class="project-group-title">韭點開始 線上專案</div>
+      <div class="project-group-sub">共 4 個專案，全部部署在 Vercel / Railway</div>
+
+      <div class="project-grid">
+        <!-- 主站 -->
+        <div class="project-card">
+          <div class="project-card-title">官方網站</div>
+          <div class="project-card-desc">韭點開始團隊官網，含 Reels 作品集、服務介紹、合作案例、團隊介紹、聯絡表單。</div>
+          <div class="project-tags">
+            <span class="project-tag">官網</span>
+            <span class="project-tag green">Vercel</span>
+          </div>
+          <div class="project-links">
+            <div class="project-link-row"><span class="project-link-label">網址</span><a href="https://www.fromnineon.com" target="_blank">fromnineon.com</a></div>
+            <div class="project-link-row"><span class="project-link-label">GitHub</span><a href="https://github.com/ritayen123/fromnineon" target="_blank">ritayen123/fromnineon</a></div>
+            <div class="project-link-row"><span class="project-link-label">部署</span><span class="plain">GitHub → Vercel 自動部署</span></div>
+          </div>
+        </div>
+
+        <!-- Jay Quiz -->
+        <div class="project-card">
+          <div class="project-card-title">周杰倫粉絲大調查</div>
+          <div class="project-card-desc">社群互動測驗網站，38 題隨機抽 15 題，5 個結果等級，自動生成 IG Story 分享圖。回覆存 Google Sheet。</div>
+          <div class="project-tags">
+            <span class="project-tag pink">測驗</span>
+            <span class="project-tag green">Vercel</span>
+            <span class="project-tag orange">GA4</span>
+          </div>
+          <div class="project-links">
+            <div class="project-link-row"><span class="project-link-label">網址</span><a href="https://jay.fromnineon.com" target="_blank">jay.fromnineon.com</a></div>
+            <div class="project-link-row"><span class="project-link-label">GitHub</span><a href="https://github.com/ritayen123/jay-quiz" target="_blank">ritayen123/jay-quiz</a></div>
+            <div class="project-link-row"><span class="project-link-label">Sheet</span><a href="https://docs.google.com/spreadsheets/d/1bLT4lmtRp2DOCVvpDDZi0h0l1IRyEFEnzbbuBK8H3_M/edit?gid=0#gid=0" target="_blank">測驗回覆紀錄</a></div>
+            <div class="project-link-row"><span class="project-link-label">部署</span><span class="plain">GitHub → Vercel 自動部署</span></div>
+          </div>
+        </div>
+
+        <!-- 加字挑戰 -->
+        <div class="project-card">
+          <div class="project-card-title">非！加字挑戰</div>
+          <div class="project-card-desc">多人即時文字遊戲，玩家輪流在詞彙前後加字組成新詞，支援多人房間對戰。</div>
+          <div class="project-tags">
+            <span class="project-tag purple">遊戲</span>
+            <span class="project-tag orange">Railway</span>
+          </div>
+          <div class="project-links">
+            <div class="project-link-row"><span class="project-link-label">網址</span><a href="https://game.fromnineon.com" target="_blank">game.fromnineon.com</a></div>
+            <div class="project-link-row"><span class="project-link-label">部署</span><span class="plain">Railway</span></div>
+          </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="project-card">
+          <div class="project-card-title">Dashboard（本站）</div>
+          <div class="project-card-desc">內部數據看板，整合 GA4、Google Search Console 數據，追蹤各專案流量與事件。</div>
+          <div class="project-tags">
+            <span class="project-tag">數據</span>
+            <span class="project-tag green">Vercel</span>
+          </div>
+          <div class="project-links">
+            <div class="project-link-row"><span class="project-link-label">網址</span><a href="https://www.fromnineon.com/dashboard.html" target="_blank">fromnineon.com/dashboard.html</a></div>
+            <div class="project-link-row"><span class="project-link-label">GitHub</span><a href="https://github.com/ritayen123/fromnineon" target="_blank">ritayen123/fromnineon</a></div>
+            <div class="project-link-row"><span class="project-link-label">部署</span><span class="plain">GitHub → Vercel 自動部署</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /tab-content -->
 
 </div><!-- /dashboard -->
@@ -792,6 +931,7 @@ function resetTabData() {
     hide(`${t}-content`);
     hide(`${t}-error`);
   });
+  tabLoaded.projects = true;
 }
 
 function loadCurrentTab() {
@@ -802,7 +942,7 @@ function loadCurrentTab() {
   if (activeTab === 'gsc')  loadGsc();
 }
 
-const tabLoaded = { game: false, site: false, quiz: false, gsc: false };
+const tabLoaded = { game: false, site: false, quiz: false, gsc: false, projects: true };
 
 /* ══════════════════════════════════════════════════
    CHART HELPERS
