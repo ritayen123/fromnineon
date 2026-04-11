@@ -646,6 +646,8 @@ const EVENT_ZH = {
   share_click:        '分享結果',
   retry_click:        '再測一次',
   ig_follow_click:    '追蹤 IG',
+  sponsor_impression: '廣告曝光',
+  sponsor_click:      '廣告點擊',
 };
 function evZh(name) { return EVENT_ZH[name] || name; }
 
@@ -1076,7 +1078,7 @@ async function loadQuiz() {
       filter: { fieldName: 'hostName', stringFilter: { value: CONFIG.GA_QUIZ_HOST, matchType: 'EXACT' } },
     };
 
-    const quizEvents = ['quiz_start', 'quiz_complete', 'share_click', 'retry_click', 'ig_follow_click'];
+    const quizEvents = ['quiz_start', 'quiz_complete', 'share_click', 'retry_click', 'ig_follow_click', 'sponsor_impression', 'sponsor_click'];
 
     const [usersResp, eventsResp, deviceResp, totalsResp] = await Promise.all([
       // daily users
@@ -1123,6 +1125,8 @@ async function loadQuiz() {
       { label: 'Sessions',     value: fmtNum(+totRow[1]?.value || 0) },
       { label: 'Page Views',   value: fmtNum(+totRow[2]?.value || 0) },
       { label: '完成測驗次數',  value: fmtNum(evVal('quiz_complete')) },
+      { label: '廣告曝光',     value: fmtNum(evVal('sponsor_impression')) },
+      { label: '廣告點擊',     value: fmtNum(evVal('sponsor_click')) },
     ];
     document.getElementById('quiz-stats').innerHTML = statData.map(s =>
       `<div class="stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div></div>`
