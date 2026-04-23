@@ -435,7 +435,7 @@ a { color: var(--accent); text-decoration: none; }
 
   <!-- Tabs -->
   <div class="tabs">
-    <div class="tab active" data-tab="game">🎮 加字挑戰</div>
+    <div class="tab active" data-tab="game">🕵️ 誰是臥底</div>
     <div class="tab" data-tab="site">🌐 主站</div>
     <div class="tab" data-tab="quiz">🎤 粉絲測驗</div>
     <div class="tab" data-tab="gsc">🔍 搜尋</div>
@@ -451,8 +451,8 @@ a { color: var(--accent); text-decoration: none; }
         <div class="site-banner site-banner-game">
           <div class="site-banner-dot"></div>
           <div>
-            <div class="site-banner-name">🎮 加字挑戰</div>
-            <div class="site-banner-url">game.fromnineon.com · Google Analytics</div>
+            <div class="site-banner-name">🕵️ 誰是臥底</div>
+            <div class="site-banner-url">spy.fromnineon.com · Google Analytics</div>
           </div>
         </div>
         <p class="section-title">總覽</p>
@@ -664,17 +664,18 @@ a { color: var(--accent); text-decoration: none; }
           </div>
         </div>
 
-        <!-- 加字挑戰 -->
+        <!-- 誰是臥底 -->
         <div class="project-card">
-          <div class="project-card-title">非！加字挑戰</div>
-          <div class="project-card-desc">多人即時文字遊戲，玩家輪流在詞彙前後加字組成新詞，支援多人房間對戰。</div>
+          <div class="project-card-title">誰是臥底</div>
+          <div class="project-card-desc">一支手機就能玩的派對遊戲！輪流傳閱看詞，找出混在人群中的臥底。</div>
           <div class="project-tags">
             <span class="project-tag purple">遊戲</span>
-            <span class="project-tag orange">Railway</span>
+            <span class="project-tag teal">Vercel</span>
           </div>
           <div class="project-links">
-            <div class="project-link-row"><span class="project-link-label">網址</span><a href="https://game.fromnineon.com" target="_blank">game.fromnineon.com</a></div>
-            <div class="project-link-row"><span class="project-link-label">部署</span><span class="plain">Railway</span></div>
+            <div class="project-link-row"><span class="project-link-label">網址</span><a href="https://spy.fromnineon.com" target="_blank">spy.fromnineon.com</a></div>
+            <div class="project-link-row"><span class="project-link-label">GitHub</span><a href="https://github.com/ritayen123/who-is-spy" target="_blank">ritayen123/who-is-spy</a></div>
+            <div class="project-link-row"><span class="project-link-label">部署</span><span class="plain">GitHub → Vercel 自動部署</span></div>
           </div>
         </div>
 
@@ -709,12 +710,12 @@ const CONFIG = {
 
   // GA4 後台 → 管理 → 資源 → 資源詳情 → 資源 ID（純數字）
   GA_PROPERTY:      'properties/526719498',   // 兩個網站共用同一個 GA4 資源
-  GA_GAME_HOST:     'game.fromnineon.com',     // 用 hostname 篩選遊戲流量
+  GA_GAME_HOST:     'spy.fromnineon.com',      // 用 hostname 篩選遊戲流量（誰是臥底）
   GA_MAIN_HOST:     'fromnineon.com',          // 用 hostname 篩選主站流量
   GA_QUIZ_HOST:     'jay.fromnineon.com', // 用 hostname 篩選測驗流量
 
   // GSC 後台裡的 site URL（要完全一致，含結尾斜線）
-  GSC_SITE_GAME: 'https://game.fromnineon.com/',
+  GSC_SITE_GAME: 'https://spy.fromnineon.com/',
   GSC_SITE_MAIN: 'https://fromnineon.com/',
 };
 /* ══════════════════════════════════════════════════ */
@@ -761,27 +762,14 @@ const PALETTE = [C.teal, C.lime, C.orange, C.pink, C.purple, C.red, C.yellow];
 
 /* ── Event name 中文對照 ─────────────────────────── */
 const EVENT_ZH = {
-  join_attempt:       '嘗試加入遊戲',
-  join_success:       '成功加入遊戲',
-  join_fail:          '加入失敗',
-  private_room_created: '建立私人房間',
-  private_room_joined:  '加入私人房間',
   game_start:         '遊戲開始',
   game_over:          '遊戲結束',
   play_again:         '再玩一局',
-  knock_vote:         '敲頭投票',
-  share_click:        '分享結果',
-  spectate_start:     '選擇觀戰',
   eliminated:         '被淘汰',
-  disconnect:         '斷線',
-  reconnect_success:  '重新連線',
-  room_code_copy:     '複製房間代碼',
-  reaction_sent:      '送出 Emoji 反應',
-  logo_click:         '點擊 Logo 前往主站',
-  lobby_wait_duration:'大廳等待時長',
-  mode_select:        '選擇模式',
+  vote_method:        '投票方式',
+  peek_word:          '偷看題目',
+  white_guess:        '白板猜詞',
   session_start:      '開啟頁面',
-  leave_room:         '離開房間',
   quiz_start:         '開始測驗',
   quiz_complete:      '完成測驗',
   share_click:        '分享結果',
@@ -1021,7 +1009,7 @@ async function loadGame() {
         dimensionFilter: {
           andGroup: { expressions: [
             hostFilter,
-            { filter: { fieldName: 'eventName', inListFilter: { values: ['join_success', 'game_start', 'game_over', 'play_again', 'knock_vote', 'share_click', 'spectate_start', 'disconnect', 'reconnect_success', 'logo_click'] } } },
+            { filter: { fieldName: 'eventName', inListFilter: { values: ['game_start', 'game_over', 'play_again', 'eliminated', 'vote_method', 'peek_word', 'white_guess'] } } },
           ]},
         },
         orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }],
@@ -1052,13 +1040,14 @@ async function loadGame() {
 
     // ── Stats ──
     const totRow = totalsResp.rows?.[0]?.metricValues || [];
+    const evVal = name => +(eventsResp.rows?.find(r => r.dimensionValues[0].value === name)?.metricValues[0].value || 0);
     const statData = [
       { label: 'Active Users', value: fmtNum(+totRow[0]?.value || 0) },
       { label: 'Sessions',     value: fmtNum(+totRow[1]?.value || 0) },
       { label: 'Page Views',   value: fmtNum(+totRow[2]?.value || 0) },
-      { label: evZh('game_start'),  value: fmtNum(+(eventsResp.rows?.find(r => r.dimensionValues[0].value === 'game_start')?.metricValues[0].value || 0)) },
-      { label: evZh('game_over'),   value: fmtNum(+(eventsResp.rows?.find(r => r.dimensionValues[0].value === 'game_over')?.metricValues[0].value || 0)) },
-      { label: evZh('share_click'), value: fmtNum(+(eventsResp.rows?.find(r => r.dimensionValues[0].value === 'share_click')?.metricValues[0].value || 0)) },
+      { label: evZh('game_start'),  value: fmtNum(evVal('game_start')) },
+      { label: evZh('game_over'),   value: fmtNum(evVal('game_over')) },
+      { label: evZh('play_again'),  value: fmtNum(evVal('play_again')) },
     ];
     document.getElementById('game-stats').innerHTML = statData.map(s =>
       `<div class="stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div></div>`
